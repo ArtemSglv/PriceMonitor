@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceMonitor", "PriceMonitor.csproj", "{ADD4C540-D8AB-4FC8-9728-6B052742F197}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADD4C540-D8AB-4FC8-9728-6B052742F197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD4C540-D8AB-4FC8-9728-6B052742F197}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD4C540-D8AB-4FC8-9728-6B052742F197}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD4C540-D8AB-4FC8-9728-6B052742F197}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
