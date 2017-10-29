@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PriceMonitor
 {
-    abstract class StockExchange
+    public abstract class StockExchange
     {
-        public virtual string GetPrice()
+        public virtual string GetPrice(string str)
         {
             return "";
         }

@@ -19,5 +19,14 @@ namespace PriceMonitor
         {
             return JsonConvert.DeserializeObject<Dictionary<K,V>>(str);
         }
+        public static Price DeserializeFromJSON(string str)
+        {
+            return JsonConvert.DeserializeObject<Price>(str);
+        }
+
+        public static void ScanAssets()
+        {
+            
+        }
     }
 }
