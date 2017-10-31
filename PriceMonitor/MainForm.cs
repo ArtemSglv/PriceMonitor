@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -17,7 +18,9 @@ namespace PriceMonitor
         class Row
         {
             private static int Index = -1;
+            private static int countExchange = 5; //кол-во бирж
 
+            public bool visibleButtons = false;
             public int index;
             public ComboBox cb;
             public List<Button> buttons;
@@ -25,30 +28,13 @@ namespace PriceMonitor
             public void CreateRow()
             {
                 int cbStartX = 11, cbStartY = 58;
-                int stepY = 70;
+                int stepY = 30;
 
                 //Row row = new Row();
                 index = ++Index;
                 cb = new ComboBox();
                 cb.Size = new Size(96, 21);
                 cb.Location = new Point(cbStartX, cbStartY + (cb.Size.Height + stepY) * index);
-                //row.cb.SelectedIndexChanged += (s, e) =>
-                //{
-                //    FillData();
-                //};
-                //row.cb.DropDown +=  (s, e) =>
-                ////{
-                ////    if (((ComboBox)s).SelectedIndex > -1)
-                ////    {
-                ////        rows.Add(new Row());
-                ////        rows[rows.Count - 1].CreateRow();
-                ////    }
-                ////    foreach (Row row in rows)
-                ////        if (row.cb.Equals((ComboBox)s))
-                ////            row.ShowButtons();
-                //    //надо добавить в контрол панели
-                //};
-                //parent.Controls.Add(cb);
                 buttons = new List<Button>();
                 CreateButtons();
                 //return row;
@@ -57,10 +43,10 @@ namespace PriceMonitor
             void CreateButtons()
             {
                 int bStartX = 130, bStartY = 48;
-                int stepX = 5, stepY = 70;
+                int stepX = 5, stepY = 10;
 
                 Button but;
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < countExchange; i++)
                 {
                     but = new Button();
                     but.Size = new Size(128, 41);
@@ -74,8 +60,12 @@ namespace PriceMonitor
             }
             public void ShowButtons()
             {
-                foreach (Button but in buttons)
-                    but.Visible = true;
+                if (!visibleButtons)
+                {
+                    foreach (Button but in buttons)
+                        but.Visible = true;
+                    visibleButtons = true;
+                }
             }
             public void FillData()
             {
@@ -88,15 +78,13 @@ namespace PriceMonitor
         List<Row> rows = new List<Row>();
 
         object[] ListAssets;
-        //int bLenght = 128, startX = 130, countComboBox = 1;
         public static List<StockExchange> Exchange;
 
         public MainForm()
         {
             InitializeComponent();
             Init();
-            //ScanAssets();
-            //dict = Engine.Request("https://poloniex.com/public?command=returnCurrencies");
+            DataUpdater();
         }
         void Init()
         {
@@ -107,10 +95,15 @@ namespace PriceMonitor
             CreateRow();
             UpdateData();
         }
+        void DataUpdater()
+        {
+            TimerCallback tcb = new TimerCallback(UpdateData);
+            System.Threading.Timer tm = new System.Threading.Timer(tcb,null,0,5000);
+            //Thread trd = new Thread(delegate() { UpdateData(); Thread.Sleep(3000); });
+            //trd.Start();
+        }
         void CreateRow()
         {
-            if (rows.Count >= 5) //limit 5 rows
-                return;
             rows.Add(new Row());
             rows[rows.Count - 1].CreateRow();
             rows[rows.Count - 1].cb.DropDown += comboBoxEventDropDown;
@@ -139,75 +132,45 @@ namespace PriceMonitor
         {
             ListAssets = Exchange[0].GetAssets();
         }
-        void FillComboBox()
+        void FillComboBox(ComboBox cb)
         {
-            foreach (Row row in rows)
-                if (row.cb.Items.Count == 0)
-                    row.cb.Items.AddRange(ListAssets);
+            if (cb.Items.Count == 0)
+                cb.Items.AddRange(ListAssets);
         }
 
-        void UpdateData(ComboBox sender = null)
+        void UpdateData(object sender = null) // заполнение кнопок и комбобоксов данными
         {
+            ComboBox cb = (ComboBox)sender;
             //for once
-            if (sender != null)
+            if (cb != null)
             {
-                rows.Find(x => (x.cb.Equals(sender))).FillData();
+                rows.Find(x => (x.cb.Equals(cb))).FillData();
                 return;
             }
             //for all
             foreach (Row row in rows)
             {
-                    if (row.cb.Items.Count == 0)
-                        row.cb.Items.AddRange(ListAssets);
+                FillComboBox(row.cb);
                 row.FillData();
             }
         }
-        //void NewLine(ComboBox upComboBox)
-        //{
-        //    ComboBox cb = new ComboBox();
-        //    cb.Size = upComboBox.Size;
-        //    cb.Location = new Point(upComboBox.Location.X, upComboBox.Location.Y + 70);
-        //    cb.SelectedIndexChanged += new EventHandler(comboBox1_SelectedIndexChanged);
-        //    panelWhite.Controls.Add(cb);
-        //    FillComboBox();
-        //}
-
-        //void ShowButtons(ComboBox cb)
-        //{
-        //    Button but;
-        //    for (int i = 0; i < 5; i++)
-        //    {
-        //        but = new Button();
-        //        if (i < Exchange.Count) // delete!!!
-        //            but.Text = Exchange[i].GetPrice(cb.SelectedItem.ToString());
-        //        but.Size = new Size(128, 41);
-        //        but.BackColor = Color.Transparent;
-        //        //but.Click += (s, e) => { MessageBox.Show(((Button)s).Location.ToString() + "\r\n" + ((Button)s).Size.ToString()); };
-        //        but.Location = new Point(startX + (bLenght + stepX) * i, cb.Location.Y);
-        //        panelWhite.Controls.Add(but);
-        //    }
-
-        //}
-
-        //private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    ShowButtons((ComboBox)sender);
-        //    //NewLine((ComboBox)sender);
-        //}
         public void comboBoxEventDropDown(object sender, EventArgs e)
         {
-            if (((ComboBox)sender).SelectedIndex == -1)
+            // условие для создания новой строки
+            ComboBox cb = (ComboBox)sender;
+            if (rows.Last().cb.Equals(cb) && cb.SelectedIndex == -1)
             {
                 CreateRow();
+                UpdateData();
             }
-            foreach (Row row in rows)
-                if (row.cb.Equals((ComboBox)sender))
-                    row.ShowButtons();
+
+            // показ кнопок
+            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
 
         }
         public void comboBoxEventSelIndexChanged(object sender, EventArgs e)
         {
-            UpdateData((ComboBox)sender);
+            UpdateData(sender);
         }
     }
 }
