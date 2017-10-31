@@ -2,22 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace PriceMonitor
 {
     class Bittrex: StockExchange
     {
+        public Bittrex()
+        {
+            Name = "Bittrex";
+            UrlAPI = "https://bittrex.com/api/v1.1/public/";
+            AvailableCoins=GetAssets(); 
+        }
+
+        public override List<string> GetAssets()
+        {
+            string command = "getcurrencies";
+            return Engine.DeserializeToAssetsBittrex(Engine.Request(UrlAPI + command));
+        }
+
         public override string GetPrice(string coin)
         {
-            string req = "https://poloniex.com/public?command=returnOrderBook&currencyPair=BTC_" + coin + "&depth=1";
-            string resp = Engine.Request(req);
-            if (resp.Contains("Invalid currency pair."))
+            string command = "getticker?market=BTC-" + coin;
+            string resp = Engine.Request(UrlAPI+command);
+            if (resp.Contains("Bad request") || resp.Contains("INVALID_MARKET"))
                 return "";
-            resp = resp.Replace("[[", "[");
-            resp = resp.Replace("]]", "]");
-            Price pr = Engine.DeserializeFromJSON(resp);
-            return "asks: " + pr.Asks[0] + "\r\n" + "bids: " + pr.Bids[0];
+            
+            Dictionary<string,double> dict=Engine.DeserializeToPriceBittrex(resp);
+
+            return "asks: " + dict["Ask"] + "\r\n" + "bids: " + dict["Bid"];
         }
     }
 }

@@ -2,29 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace PriceMonitor
 {
-    class Poloniex:StockExchange
+    class Poloniex : StockExchange
     {
-        public override object[] GetAssets()
+        public Poloniex()
         {
-            var respStr = Engine.Request("https://poloniex.com/public?command=returnCurrencies");
-            return Engine.DeserializeFromJSON<string, object>(respStr).Keys.ToArray();
-            //return new object[5];
+            Name = "Poloniex";
+            UrlAPI = "https://poloniex.com/public?command=";
+            AvailableCoins=GetAssets();
+            
+            
+        }
+
+        public override List<string> GetAssets()
+        {
+            string command = "returnCurrencies";
+            return Engine.DeserializeToAssetsPoloniex(Engine.Request(UrlAPI + command));            
         }
 
         public override string GetPrice(string coin)
         {
-            string req = "https://poloniex.com/public?command=returnOrderBook&currencyPair=BTC_"+coin+ "&depth=1";
-            string resp = Engine.Request(req);
+            string command ="returnOrderBook&currencyPair=BTC_" + coin + "&depth=1";
+            string resp = Engine.Request(UrlAPI+command);
+
             if (resp.Contains("Invalid currency pair."))
                 return "";
-            resp=resp.Replace("[[","[");
-            resp=resp.Replace("]]", "]");
-            Price pr=Engine.DeserializeFromJSON(resp);
-            return "asks: "+pr.Asks[0]+"\r\n"+"bids: "+pr.Bids[0];
+
+            resp = resp.Replace("[[", "[");
+            resp = resp.Replace("]]", "]");
+
+            PricePoloniex pr = Engine.DeserializeToPricePoloniex(resp);
+
+            return "asks: " + pr.Asks[0].ToString() + "\r\n" + "bids: " + pr.Bids[0];
         }
     }
 }

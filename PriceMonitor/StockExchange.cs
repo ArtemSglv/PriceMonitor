@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace PriceMonitor
 {
     public abstract class StockExchange
     {
-        public virtual string GetPrice(string str)
-        {
-            return "";
-        }
+        public string Name { get; set; }
+        public string UrlAPI { get; set; }
+        public List<string> AvailableCoins { get; set; }
 
-        public virtual object[] GetAssets()
-        {
+        public StockExchange() {  }
 
-            return new object[5];
-        }
+        public abstract string GetPrice(string coin);
+
+        public abstract List<string> GetAssets();
     }
 }

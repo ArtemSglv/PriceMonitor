@@ -18,7 +18,6 @@ namespace PriceMonitor
         class Row
         {
             private static int Index = -1;
-            private static int countExchange = 5; //кол-во бирж
 
             public bool visibleButtons = false;
             public int index;
@@ -46,9 +45,10 @@ namespace PriceMonitor
                 int stepX = 5, stepY = 10;
 
                 Button but;
-                for (int i = 0; i < countExchange; i++)
+                for (int i = 0; i < Engine.exchanges.Count; i++)
                 {
                     but = new Button();
+                    but.Name = Engine.exchanges[i].Name;
                     but.Size = new Size(128, 41);
                     but.BackColor = Color.Transparent;
                     but.Visible = false;
@@ -67,30 +67,30 @@ namespace PriceMonitor
                     visibleButtons = true;
                 }
             }
-            public void FillData()
+            public void FillData() // print price into buttons
             {
                 for (int i = 0; i < buttons.Count; i++)
-                    if (cb.SelectedItem != null && i < Exchange.Count)
-                        buttons[i].Text = Exchange[i].GetPrice(cb.SelectedItem.ToString());
+                    if (cb.SelectedItem != null && i < Engine.exchanges.Count)
+                        buttons[i].Text = Engine.exchanges[i].GetPrice(cb.SelectedItem.ToString());
             }
         }
 
         List<Row> rows = new List<Row>();
 
-        object[] ListAssets;
-        public static List<StockExchange> Exchange;
+        //object[] ListAssets;
+        //public static List<StockExchange> Exchange;
 
         public MainForm()
         {
             InitializeComponent();
-            Init();
-            DataUpdater();
+            Init();            
+           // DataUpdater();
         }
         void Init()
         {
-            Exchange = new List<StockExchange>();
-            Exchange.Add(new Poloniex());
-            ScanAssets();
+           // Exchange = new List<StockExchange>();
+            //Exchange.Add(new Poloniex());
+            Engine.ScanAssets();
             //SetCoord();
             CreateRow();
             UpdateData();
@@ -105,19 +105,11 @@ namespace PriceMonitor
         void CreateRow()
         {
             rows.Add(new Row());
-            rows[rows.Count - 1].CreateRow();
-            rows[rows.Count - 1].cb.DropDown += comboBoxEventDropDown;
-            rows[rows.Count - 1].cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
-            AddToPanelWhiteControls();
-        }
-        void AddToPanelWhiteControls()
-        {
-            //panelWhite.Controls.Add(comboBox1);
-            foreach (Row row in rows)
-            {
-                panelWhite.Controls.Add(row.cb);
-                panelWhite.Controls.AddRange(row.buttons.ToArray());
-            }
+            rows.Last().CreateRow();
+            rows.Last().cb.DropDown += comboBoxEventDropDown;
+            rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
+            panelWhite.Controls.Add(rows.Last().cb);
+            panelWhite.Controls.AddRange(rows.Last().buttons.ToArray());
         }
         void SetCoord()
         {
@@ -130,12 +122,12 @@ namespace PriceMonitor
 
         void ScanAssets()
         {
-            ListAssets = Exchange[0].GetAssets();
+            Thread trd =new Thread(delegate() { Engine.ScanAssets(); MessageBox.Show("Найдено монет:\r\n"); });
         }
         void FillComboBox(ComboBox cb)
         {
             if (cb.Items.Count == 0)
-                cb.Items.AddRange(ListAssets);
+                cb.Items.AddRange(Engine.listAssets.ToArray<object>());
         }
 
         void UpdateData(object sender = null) // заполнение кнопок и комбобоксов данными
@@ -156,20 +148,22 @@ namespace PriceMonitor
         }
         public void comboBoxEventDropDown(object sender, EventArgs e)
         {
-            // условие для создания новой строки
-            ComboBox cb = (ComboBox)sender;
-            if (rows.Last().cb.Equals(cb) && cb.SelectedIndex == -1)
-            {
-                CreateRow();
-                UpdateData();
-            }
-
-            // показ кнопок
-            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
+            
 
         }
         public void comboBoxEventSelIndexChanged(object sender, EventArgs e)
         {
+
+            // условие для создания новой строки
+            ComboBox cb = (ComboBox)sender;
+            if (rows.Last().cb.Equals(cb) /*&& cb.SelectedIndex == -1*/)
+            {
+                CreateRow();
+                UpdateData();
+            }
+            // показ кнопок
+            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
+
             UpdateData(sender);
         }
     }
