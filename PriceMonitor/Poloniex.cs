@@ -12,8 +12,9 @@ namespace PriceMonitor
         {
             Name = "Poloniex";
             UrlAPI = "https://poloniex.com/public?command=";
-            AvailableCoins=GetAssets();          
-            
+            Url = "https://poloniex.com/exchange#btc_";
+            AvailableCoins=GetAssets();
+            Price = new Dictionary<string, CurrentPrice>();
         }
 
         public override List<string> GetAssets()
@@ -29,17 +30,19 @@ namespace PriceMonitor
 
             if (resp.Contains("Invalid currency pair."))
             {
-                Price.Clear();
+                Price.Remove(coin);
+                //Price[coin].Clear();
                 return;
             }
 
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
 
-            PricePoloniex pr = Engine.DeserializeToPricePoloniex(resp);
-            Price.ask = double.Parse(pr.Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-            Price.bid = double.Parse(pr.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-            //return "asks: " + pr.Asks[0].ToString() + "\r\n" + "bids: " + pr.Bids[0];
+            PricePoloniex pp = Engine.DeserializeToPricePoloniex(resp);
+            CurrentPrice pr;
+            pr.ask = double.Parse(pp.Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            pr.bid = double.Parse(pp.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            Price[coin]=pr;
         }
     }
 }

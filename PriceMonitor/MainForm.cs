@@ -8,8 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net;
-using Newtonsoft.Json;
+using System.Configuration;
 
 namespace PriceMonitor
 {
@@ -17,6 +16,7 @@ namespace PriceMonitor
     {
         List<Row> rows = new List<Row>();
         static Engine engine = new Engine();
+        System.Timers.Timer tmr;
 
         class Row
         {
@@ -57,7 +57,6 @@ namespace PriceMonitor
                     but.Visible = false;
                     //but.Click += (s, e) => { }; //переход в браузер на эту биржу
                     but.Location = new Point(bStartX + (but.Size.Width + stepX) * i, bStartY + (but.Size.Height + stepY) * index);
-                    //parent.Controls.Add(but);
                     buttons.Add(but);
                 }
             }
@@ -74,12 +73,10 @@ namespace PriceMonitor
             {
                 if (cb.SelectedItem != null)
                 {
-                    string coin = cb.SelectedItem.ToString();
-                    Thread trd = new Thread(delegate() { engine.GetPrice(coin); });
-                    trd.Start();
-                    trd.Join();
                     for (int i = 0; i < buttons.Count; i++)
-                        buttons[i].Text = engine.exchanges[i].Price.ToString();
+                        if (engine.exchanges[i].Price.ContainsKey(cb.SelectedItem.ToString()))
+                            buttons[i].Text = engine.exchanges[i].Price[cb.SelectedItem.ToString()].ToString();
+                        else buttons[i].Text = "";
                 }
             }
         }
@@ -90,23 +87,25 @@ namespace PriceMonitor
         }
         void Init()
         {
-            engine.ScanAssets();
+            ScanAssets();
             CreateRow();
-            UpdateData();
         }
-        void DataUpdater()
+        //void DataUpdater(object sender, EventArgs e)
+        //{
+        //    GetPriceInThread();
+        //}
+        void InitAndStartTimer()
         {
-            TimerCallback tcb = new TimerCallback(UpdateData);
-            System.Threading.Timer tm = new System.Threading.Timer(tcb,null,0,5000);
-            //Thread trd = new Thread(delegate() { UpdateData(); Thread.Sleep(3000); });
-            //trd.Start();
+            tmr = new System.Timers.Timer();            
+            tmr.Elapsed += GetPriceInThread;
+            tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
+            tmr.Start();
         }
         void CreateRow()
         {
             rows.Add(new Row());
             rows.Last().CreateRow();
             rows.Last().cb.Items.AddRange(engine.listAssets.ToArray<object>());
-            rows.Last().cb.DropDown += comboBoxEventDropDown;
             rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
             panelWhite.Controls.Add(rows.Last().cb);
             panelWhite.Controls.AddRange(rows.Last().buttons.ToArray());
@@ -122,55 +121,105 @@ namespace PriceMonitor
 
         void ScanAssets()
         {
-            Thread trd =new Thread(delegate() { engine.ScanAssets(); MessageBox.Show("Найдено монет:\r\n"); });
+            string str = "";
+            Thread trd = new Thread(delegate ()
+            {
+                engine.ScanAssets();
+                engine.exchanges.ForEach(x => str += x.ToString());
+            });
+            trd.Start();
+            trd.Join();
+            MessageBox.Show("Найдено монет:\r\n" + str);
         }
         void FillComboBox(ComboBox cb)
         {
+            Thread.Sleep(0);
             if (cb.Items.Count == 0)
                 cb.Items.AddRange(engine.listAssets.ToArray<object>());
         }
 
-        void UpdateData(object sender = null) // заполнение кнопок и комбобоксов данными
+        void UpdateData(object sender = null) // заполнение кнопок данными
         {
             ComboBox cb = (ComboBox)sender;
             //for once
             if (cb != null)
             {
-                rows.Find(x => (x.cb.Equals(cb))).FillData();
+                rows.Find(x => ( x.cb.Equals(cb))).FillData();
                 return;
             }
             //for all
             rows.ForEach(x => { x.FillData(); });
-            //foreach (Row row in rows)
-            //{
-            //   // FillComboBox(row.cb);
-            //    row.FillData();
-            //}
-        }
-        public void comboBoxEventDropDown(object sender, EventArgs e)
-        {
-            
 
+        }
+
+        void GetPriceInThread(object sender, EventArgs e) //for all coin in all combobox ОЧЕНЬ ПЛОХОЙ МЕТОД КАК БЫ ЕГО ПЕРЕДЕЛАТЬ?
+        {
+            tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
+            Thread trd = new Thread(delegate ()
+            {
+                engine.exchanges.ForEach
+                (
+                    x => { x.Price.Keys.ToList().ForEach
+                        (
+                            k =>
+                            {
+                                engine.GetPrice(k);
+                            }
+                         );
+                    });
+                rows.ForEach(x => {
+                    x.cb.BeginInvoke(new Action(() =>
+                                                    {
+                                                        x.FillData();
+                                                        labelTimeRefresh.Text= string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now);
+                                                    }));
+                });
+            });
+            trd.Start();
+            trd.Join();
+        }
+        void GetPriceInThread(string sel_coin)
+        {
+            Thread trd = new Thread(delegate () { engine.GetPrice(sel_coin); });
+            trd.Start();
+            trd.Join();
         }
         public void comboBoxEventSelIndexChanged(object sender, EventArgs e)
         {
-
-            // условие для создания новой строки
             ComboBox cb = (ComboBox)sender;
-            if (rows.Last().cb.Equals(cb) /*&& cb.SelectedIndex == -1*/)
+
+            // запрос цен в отдельном потоке
+            GetPriceInThread(cb.SelectedItem.ToString());
+
+            // Создание новой строки            
+            if (rows.Last().cb.Equals(cb))
             {
                 CreateRow();
-                UpdateData(rows.Last().cb);
+                //UpdateData(rows.Last().cb);
             }
-            // показ кнопок
+
+            // отрисовка кнопок
             rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
 
+            // заполнение кнопок для определенного комбобокса
             UpdateData(sender);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             Init();
+            InitAndStartTimer();
+        }
+
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void параметрыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings set = new Settings();
+            set.ShowDialog();
         }
     }
 }

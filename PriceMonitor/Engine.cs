@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.ComponentModel;
+using System.Configuration;
 using System.Net;
 using Newtonsoft.Json;
 
@@ -16,10 +17,13 @@ namespace PriceMonitor
 
         public Engine()
         {
-            exchanges = new List<StockExchange>(){
-            new Poloniex(),
-            new Bittrex() };
+            exchanges = new List<StockExchange>()
+            {
+                new Poloniex(),
+                new Bittrex()
+            };
             listAssets = new List<string>();
+            
         }
 
         public static string Request(string url)

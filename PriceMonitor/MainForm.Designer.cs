@@ -38,8 +38,10 @@
             this.labelBittrex = new System.Windows.Forms.Label();
             this.labelPoloniex = new System.Windows.Forms.Label();
             this.panelStatus = new System.Windows.Forms.Panel();
+            this.labelTimeRefresh = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panelWhite.SuspendLayout();
+            this.panelStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -68,6 +70,7 @@
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
             this.выходToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
             this.выходToolStripMenuItem.Text = "Выход";
+            this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
             // настройкаToolStripMenuItem
             // 
@@ -80,8 +83,9 @@
             // параметрыToolStripMenuItem
             // 
             this.параметрыToolStripMenuItem.Name = "параметрыToolStripMenuItem";
-            this.параметрыToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.параметрыToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
             this.параметрыToolStripMenuItem.Text = "Параметры";
+            this.параметрыToolStripMenuItem.Click += new System.EventHandler(this.параметрыToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -133,13 +137,24 @@
             // 
             // panelStatus
             // 
-            this.panelStatus.BackColor = System.Drawing.Color.Black;
+            this.panelStatus.BackColor = System.Drawing.Color.Gray;
+            this.panelStatus.Controls.Add(this.labelTimeRefresh);
             this.panelStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelStatus.Location = new System.Drawing.Point(0, 438);
             this.panelStatus.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelStatus.Name = "panelStatus";
             this.panelStatus.Size = new System.Drawing.Size(1061, 28);
             this.panelStatus.TabIndex = 3;
+            // 
+            // labelTimeRefresh
+            // 
+            this.labelTimeRefresh.AutoSize = true;
+            this.labelTimeRefresh.BackColor = System.Drawing.Color.Transparent;
+            this.labelTimeRefresh.ForeColor = System.Drawing.Color.Snow;
+            this.labelTimeRefresh.Location = new System.Drawing.Point(10, 5);
+            this.labelTimeRefresh.Name = "labelTimeRefresh";
+            this.labelTimeRefresh.Size = new System.Drawing.Size(0, 17);
+            this.labelTimeRefresh.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -158,6 +173,8 @@
             this.menuStrip1.PerformLayout();
             this.panelWhite.ResumeLayout(false);
             this.panelWhite.PerformLayout();
+            this.panelStatus.ResumeLayout(false);
+            this.panelStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,6 +192,7 @@
         private System.Windows.Forms.Label labelPoloniex;
         private System.Windows.Forms.Panel panelStatus;
         private System.Windows.Forms.Label labelBittrex;
+        private System.Windows.Forms.Label labelTimeRefresh;
     }
 }
 
