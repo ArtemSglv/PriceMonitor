@@ -14,7 +14,12 @@ namespace PriceMonitor
             public double bid;
             public override string ToString()
             {
-                return (ask != 0.0d && bid != 0.0d) ? "asks: " + ask + "\r\nbids: " + bid : "";
+                return (ask != 0.0d && bid != 0.0d) ? "asks: " + ask.ToString("F8") + "\r\nbids: " + bid.ToString("F8") : "";
+            }
+            public void Clear()
+            {
+                ask = 0.0d;
+                bid = 0.0d;
             }
         }
 

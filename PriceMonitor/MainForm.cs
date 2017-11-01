@@ -15,6 +15,9 @@ namespace PriceMonitor
 {
     public partial class MainForm : Form
     {
+        List<Row> rows = new List<Row>();
+        static Engine engine = new Engine();
+
         class Row
         {
             private static int Index = -1;
@@ -45,10 +48,10 @@ namespace PriceMonitor
                 int stepX = 5, stepY = 10;
 
                 Button but;
-                for (int i = 0; i < Engine.exchanges.Count; i++)
+                for (int i = 0; i < engine.exchanges.Count; i++)
                 {
                     but = new Button();
-                    but.Name = Engine.exchanges[i].Name;
+                    but.Name = engine.exchanges[i].Name;
                     but.Size = new Size(128, 41);
                     but.BackColor = Color.Transparent;
                     but.Visible = false;
@@ -71,30 +74,23 @@ namespace PriceMonitor
             {
                 if (cb.SelectedItem != null)
                 {
-                    Engine.GetPrice(cb.SelectedItem.ToString());
+                    string coin = cb.SelectedItem.ToString();
+                    Thread trd = new Thread(delegate() { engine.GetPrice(coin); });
+                    trd.Start();
+                    trd.Join();
                     for (int i = 0; i < buttons.Count; i++)
-                        buttons[i].Text = Engine.exchanges[i].Price.ToString();
+                        buttons[i].Text = engine.exchanges[i].Price.ToString();
                 }
             }
         }
 
-        List<Row> rows = new List<Row>();
-
-        //object[] ListAssets;
-        //public static List<StockExchange> Exchange;
-
         public MainForm()
         {
             InitializeComponent();
-            Init();            
-           // DataUpdater();
         }
         void Init()
         {
-           // Exchange = new List<StockExchange>();
-            //Exchange.Add(new Poloniex());
-            Engine.ScanAssets();
-            //SetCoord();
+            engine.ScanAssets();
             CreateRow();
             UpdateData();
         }
@@ -109,7 +105,7 @@ namespace PriceMonitor
         {
             rows.Add(new Row());
             rows.Last().CreateRow();
-            rows.Last().cb.Items.AddRange(Engine.listAssets.ToArray<object>());
+            rows.Last().cb.Items.AddRange(engine.listAssets.ToArray<object>());
             rows.Last().cb.DropDown += comboBoxEventDropDown;
             rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
             panelWhite.Controls.Add(rows.Last().cb);
@@ -126,12 +122,12 @@ namespace PriceMonitor
 
         void ScanAssets()
         {
-            Thread trd =new Thread(delegate() { Engine.ScanAssets(); MessageBox.Show("Найдено монет:\r\n"); });
+            Thread trd =new Thread(delegate() { engine.ScanAssets(); MessageBox.Show("Найдено монет:\r\n"); });
         }
         void FillComboBox(ComboBox cb)
         {
             if (cb.Items.Count == 0)
-                cb.Items.AddRange(Engine.listAssets.ToArray<object>());
+                cb.Items.AddRange(engine.listAssets.ToArray<object>());
         }
 
         void UpdateData(object sender = null) // заполнение кнопок и комбобоксов данными
@@ -170,6 +166,11 @@ namespace PriceMonitor
             rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
 
             UpdateData(sender);
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Init();
         }
     }
 }

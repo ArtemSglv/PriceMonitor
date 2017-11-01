@@ -28,15 +28,17 @@ namespace PriceMonitor
             string resp = Engine.Request(UrlAPI+command);
 
             if (resp.Contains("Invalid currency pair."))
-                return ;
+            {
+                Price.Clear();
+                return;
+            }
 
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
 
             PricePoloniex pr = Engine.DeserializeToPricePoloniex(resp);
-            //there is error
-            Price.ask = (double)pr.Asks[0];
-            Price.bid = (double)pr.Bids[0];
+            Price.ask = double.Parse(pr.Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            Price.bid = double.Parse(pr.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
             //return "asks: " + pr.Asks[0].ToString() + "\r\n" + "bids: " + pr.Bids[0];
         }
     }

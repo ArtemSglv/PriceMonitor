@@ -26,7 +26,10 @@ namespace PriceMonitor
             string command = "getticker?market=BTC-" + coin;
             string resp = Engine.Request(UrlAPI+command);
             if (resp.Contains("Bad request") || resp.Contains("INVALID_MARKET"))
+            {
+                Price.Clear();
                 return;
+            }
             
             Dictionary<string,double> dict=Engine.DeserializeToPriceBittrex(resp);
             Price.ask = dict["Ask"];

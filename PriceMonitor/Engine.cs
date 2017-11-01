@@ -11,12 +11,16 @@ namespace PriceMonitor
 {
     class Engine
     {
-        public static List<StockExchange> exchanges= new List<StockExchange>(){
+        public List<StockExchange> exchanges;
+        public List<string> listAssets;
+
+        public Engine()
+        {
+            exchanges = new List<StockExchange>(){
             new Poloniex(),
             new Bittrex() };
-
-       
-        public static List<string> listAssets = new List<string>();
+            listAssets = new List<string>();
+        }
 
         public static string Request(string url)
         {
@@ -50,7 +54,7 @@ namespace PriceMonitor
             //return res;
         }
 
-        public static void ScanAssets()
+        public void ScanAssets()
         {
             foreach (StockExchange ex in exchanges)
             {
@@ -59,11 +63,12 @@ namespace PriceMonitor
                 else
                     listAssets.Union(ex.AvailableCoins);
             }
-        }          
-            
-        public static void GetPrice(string coin)
+        }
+
+        public void GetPrice(string coin)
         {
-            exchanges.ForEach(x => {
+            exchanges.ForEach(x =>
+            {
                 x.GetPrice(coin);
             });
         }
