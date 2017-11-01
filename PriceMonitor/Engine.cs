@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.ComponentModel;
 using System.Net;
 using Newtonsoft.Json;
 
@@ -58,6 +59,13 @@ namespace PriceMonitor
                 else
                     listAssets.Union(ex.AvailableCoins);
             }
+        }          
+            
+        public static void GetPrice(string coin)
+        {
+            exchanges.ForEach(x => {
+                x.GetPrice(coin);
+            });
         }
     }
 }

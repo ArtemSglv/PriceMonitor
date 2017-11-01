@@ -69,9 +69,12 @@ namespace PriceMonitor
             }
             public void FillData() // print price into buttons
             {
-                for (int i = 0; i < buttons.Count; i++)
-                    if (cb.SelectedItem != null && i < Engine.exchanges.Count)
-                        buttons[i].Text = Engine.exchanges[i].GetPrice(cb.SelectedItem.ToString());
+                if (cb.SelectedItem != null)
+                {
+                    Engine.GetPrice(cb.SelectedItem.ToString());
+                    for (int i = 0; i < buttons.Count; i++)
+                        buttons[i].Text = Engine.exchanges[i].Price.ToString();
+                }
             }
         }
 
@@ -106,6 +109,7 @@ namespace PriceMonitor
         {
             rows.Add(new Row());
             rows.Last().CreateRow();
+            rows.Last().cb.Items.AddRange(Engine.listAssets.ToArray<object>());
             rows.Last().cb.DropDown += comboBoxEventDropDown;
             rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
             panelWhite.Controls.Add(rows.Last().cb);
@@ -140,11 +144,12 @@ namespace PriceMonitor
                 return;
             }
             //for all
-            foreach (Row row in rows)
-            {
-                FillComboBox(row.cb);
-                row.FillData();
-            }
+            rows.ForEach(x => { x.FillData(); });
+            //foreach (Row row in rows)
+            //{
+            //   // FillComboBox(row.cb);
+            //    row.FillData();
+            //}
         }
         public void comboBoxEventDropDown(object sender, EventArgs e)
         {
@@ -159,7 +164,7 @@ namespace PriceMonitor
             if (rows.Last().cb.Equals(cb) /*&& cb.SelectedIndex == -1*/)
             {
                 CreateRow();
-                UpdateData();
+                UpdateData(rows.Last().cb);
             }
             // показ кнопок
             rows.Find(x => (x.cb.Equals(cb))).ShowButtons();

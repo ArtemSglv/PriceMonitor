@@ -21,16 +21,17 @@ namespace PriceMonitor
             return Engine.DeserializeToAssetsBittrex(Engine.Request(UrlAPI + command));
         }
 
-        public override string GetPrice(string coin)
+        public override void GetPrice(string coin)
         {
             string command = "getticker?market=BTC-" + coin;
             string resp = Engine.Request(UrlAPI+command);
             if (resp.Contains("Bad request") || resp.Contains("INVALID_MARKET"))
-                return "";
+                return;
             
             Dictionary<string,double> dict=Engine.DeserializeToPriceBittrex(resp);
-
-            return "asks: " + dict["Ask"] + "\r\n" + "bids: " + dict["Bid"];
+            Price.ask = dict["Ask"];
+            Price.bid = dict["Bid"];
+            //return "asks: " + dict["Ask"] + "\r\n" + "bids: " + dict["Bid"];
         }
     }
 }

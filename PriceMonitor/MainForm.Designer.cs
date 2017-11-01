@@ -35,9 +35,9 @@
             this.параметрыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.panelWhite = new System.Windows.Forms.Panel();
+            this.labelBittrex = new System.Windows.Forms.Label();
             this.labelPoloniex = new System.Windows.Forms.Label();
             this.panelStatus = new System.Windows.Forms.Panel();
-            this.labelBittrex = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panelWhite.SuspendLayout();
             this.SuspendLayout();
@@ -109,6 +109,17 @@
             this.panelWhite.Size = new System.Drawing.Size(1061, 438);
             this.panelWhite.TabIndex = 3;
             // 
+            // labelBittrex
+            // 
+            this.labelBittrex.BackColor = System.Drawing.Color.White;
+            this.labelBittrex.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelBittrex.Location = new System.Drawing.Point(372, 36);
+            this.labelBittrex.Name = "labelBittrex";
+            this.labelBittrex.Size = new System.Drawing.Size(125, 17);
+            this.labelBittrex.TabIndex = 5;
+            this.labelBittrex.Text = "Bittrex.com";
+            this.labelBittrex.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // labelPoloniex
             // 
             this.labelPoloniex.BackColor = System.Drawing.Color.White;
@@ -130,17 +141,6 @@
             this.panelStatus.Size = new System.Drawing.Size(1061, 28);
             this.panelStatus.TabIndex = 3;
             // 
-            // labelBittrex
-            // 
-            this.labelBittrex.BackColor = System.Drawing.Color.White;
-            this.labelBittrex.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelBittrex.Location = new System.Drawing.Point(372, 36);
-            this.labelBittrex.Name = "labelBittrex";
-            this.labelBittrex.Size = new System.Drawing.Size(125, 17);
-            this.labelBittrex.TabIndex = 5;
-            this.labelBittrex.Text = "Bittrex.com";
-            this.labelBittrex.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -151,7 +151,6 @@
             this.Controls.Add(this.panelStatus);
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "PriceMonitor";
             this.menuStrip1.ResumeLayout(false);

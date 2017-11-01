@@ -8,13 +8,24 @@ namespace PriceMonitor
 {
     public abstract class StockExchange
     {
+        public struct CurrentPrice
+        {
+            public double ask;
+            public double bid;
+            public override string ToString()
+            {
+                return (ask != 0.0d && bid != 0.0d) ? "asks: " + ask + "\r\nbids: " + bid : "";
+            }
+        }
+
         public string Name { get; set; }
         public string UrlAPI { get; set; }
         public List<string> AvailableCoins { get; set; }
+        public CurrentPrice Price;
 
-        public StockExchange() {  }
+        public StockExchange() { }
 
-        public abstract string GetPrice(string coin);
+        public abstract void GetPrice(string coin);
 
         public abstract List<string> GetAssets();
     }
