@@ -40,5 +40,10 @@ namespace PriceMonitor
             pr.bid= dict["Bid"];
             Price[coin] = pr;
         }
+
+        public override string GetUrl(string coin)
+        {
+            return Url + coin;
+        }
     }
 }

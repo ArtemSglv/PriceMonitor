@@ -36,6 +36,8 @@ namespace PriceMonitor
                 index = ++Index;
                 cb = new ComboBox();
                 cb.Size = new Size(96, 21);
+                cb.IntegralHeight = false;
+                cb.MaxDropDownItems = 10;
                 cb.Location = new Point(cbStartX, cbStartY + (cb.Size.Height + stepY) * index);
                 buttons = new List<Button>();
                 CreateButtons();
@@ -55,7 +57,12 @@ namespace PriceMonitor
                     but.Size = new Size(128, 41);
                     but.BackColor = Color.Transparent;
                     but.Visible = false;
-                    //but.Click += (s, e) => { }; //переход в браузер на эту биржу
+                    but.Tag = engine.exchanges[i].Url;
+                    but.Click += (s, e) => {
+                        if (((Button)s).Text != "")
+                            System.Diagnostics.Process.Start(
+                                engine.exchanges.Find(x=>x.Url== ((Button)s).Tag.ToString()).GetUrl(cb.SelectedItem.ToString())
+                                ); }; //переход в браузер на эту биржу
                     but.Location = new Point(bStartX + (but.Size.Width + stepX) * i, bStartY + (but.Size.Height + stepY) * index);
                     buttons.Add(but);
                 }
@@ -67,7 +74,7 @@ namespace PriceMonitor
                     foreach (Button but in buttons)
                         but.Visible = true;
                     visibleButtons = true;
-                }
+                }                
             }
             public void FillData() // print price into buttons
             {
@@ -94,13 +101,13 @@ namespace PriceMonitor
         //{
         //    GetPriceInThread();
         //}
-        void InitAndStartTimer()
-        {
-            tmr = new System.Timers.Timer();            
-            tmr.Elapsed += GetPriceInThread;
-            tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
-            tmr.Start();
-        }
+        //void InitAndStartTimer()
+        //{
+        //    tmr = new System.Timers.Timer();            
+        //    tmr.Elapsed += GetPriceInThread;
+        //    tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
+        //    tmr.Start();
+        //}
         void CreateRow()
         {
             rows.Add(new Row());
@@ -151,32 +158,42 @@ namespace PriceMonitor
             rows.ForEach(x => { x.FillData(); });
 
         }
-
-        void GetPriceInThread(object sender, EventArgs e) //for all coin in all combobox ОЧЕНЬ ПЛОХОЙ МЕТОД КАК БЫ ЕГО ПЕРЕДЕЛАТЬ?
+        void GetPriceInThread(object sender, EventArgs e)
         {
-            tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
-            Thread trd = new Thread(delegate ()
-            {
-                engine.exchanges.ForEach
+            engine.exchanges.ForEach
                 (
-                    x => { x.Price.Keys.ToList().ForEach
-                        (
-                            k =>
-                            {
-                                engine.GetPrice(k);
-                            }
-                         );
+                    x => {
+                        x.Price.Keys.ToList().ForEach
+                     (
+                         k =>
+                         {
+                             engine.GetPrice(k);
+                         }
+                      );
                     });
-                rows.ForEach(x => {
-                    x.cb.BeginInvoke(new Action(() =>
-                                                    {
-                                                        x.FillData();
-                                                        labelTimeRefresh.Text= string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now);
-                                                    }));
-                });
+            rows.ForEach(x => {
+                x.cb.BeginInvoke(new Action(() =>
+                {
+                    x.FillData();
+                    labelTimeRefresh.Text = string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now);
+                }));
             });
+            //MessageBox.Show(Thread.CurrentThread.Name);
+        }
+        void StartTimerInThread() //for all coin in all combobox ОЧЕНЬ ПЛОХОЙ МЕТОД КАК БЫ ЕГО ПЕРЕДЕЛАТЬ?
+        {
+            tmr = new System.Timers.Timer();
+            tmr.Elapsed += GetPriceInThread;
+            Thread trd = new Thread(delegate ()
+            {                
+                tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
+                tmr.Start();
+                
+            });
+            trd.IsBackground = true;
+            trd.Name = "my Timer thread";
             trd.Start();
-            trd.Join();
+            //trd.Join();
         }
         void GetPriceInThread(string sel_coin)
         {
@@ -184,12 +201,12 @@ namespace PriceMonitor
             trd.Start();
             trd.Join();
         }
-        public void comboBoxEventSelIndexChanged(object sender, EventArgs e)
+        public void comboBoxEventSelIndexChanged(object sender, EventArgs e) // тут можно поиграться с порядком, для лучшего отображения
         {
             ComboBox cb = (ComboBox)sender;
 
-            // запрос цен в отдельном потоке
-            GetPriceInThread(cb.SelectedItem.ToString());
+            // отрисовка кнопок при выборе монеты
+            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();                      
 
             // Создание новой строки            
             if (rows.Last().cb.Equals(cb))
@@ -198,8 +215,8 @@ namespace PriceMonitor
                 //UpdateData(rows.Last().cb);
             }
 
-            // отрисовка кнопок
-            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
+            // запрос цен в отдельном потоке
+            GetPriceInThread(cb.SelectedItem.ToString());
 
             // заполнение кнопок для определенного комбобокса
             UpdateData(sender);
@@ -208,7 +225,7 @@ namespace PriceMonitor
         private void MainForm_Load(object sender, EventArgs e)
         {
             Init();
-            InitAndStartTimer();
+            StartTimerInThread();
         }
 
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)

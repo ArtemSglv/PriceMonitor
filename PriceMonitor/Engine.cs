@@ -20,7 +20,8 @@ namespace PriceMonitor
             exchanges = new List<StockExchange>()
             {
                 new Poloniex(),
-                new Bittrex()
+                new Bittrex(),
+                new Liqui()
             };
             listAssets = new List<string>();
             
@@ -29,6 +30,15 @@ namespace PriceMonitor
         public static string Request(string url)
         {
             return new WebClient().DownloadString(url);
+        }
+
+        public static List<string> DeserializeToAssetsLiqui(string str)
+        {
+            List<string> res = new List<string>();
+            CurrencyLiqui curLiq = JsonConvert.DeserializeObject<CurrencyLiqui>(str);
+            //curLiq.pairs.ForEach(x=> { x.Keys.ToList().ForEach(k=> { if (k.Contains("_btc")) res.Add(k.Substring(0, x.ToString().Length - 4)); });  });
+            res.Sort();
+            return res;
         }
 
         public static List<string> DeserializeToAssetsPoloniex(string str)
@@ -41,12 +51,18 @@ namespace PriceMonitor
             List<string> res = new List<string>();
             CurrencyBittrex curBit = JsonConvert.DeserializeObject<CurrencyBittrex>(str);
             curBit.result.ForEach(x => { res.Add(x["Currency"].ToString()); });
+            res.Sort();
             return res;
         }
 
         public static PricePoloniex DeserializeToPricePoloniex(string str)
         {
             return JsonConvert.DeserializeObject<PricePoloniex>(str);
+        }
+
+        public static PriceLiqui DeserializeToPriceLiqui(string str)
+        {
+            return JsonConvert.DeserializeObject<PriceLiqui>(str);
         }
 
         public static Dictionary<string, double> DeserializeToPriceBittrex(string str)

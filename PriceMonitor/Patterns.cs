@@ -28,4 +28,15 @@ namespace PriceMonitor
         public Dictionary<string, double> result { get; set; }
     }
 
+    class CurrencyLiqui
+    {
+        public int server_time { get; set; }
+        public List<List<object>> pairs { get; set; }
+    }
+
+    struct PriceLiqui
+    {
+        public Dictionary<string, List<double>> coin { get; set; }
+    }
+
 }

@@ -26,7 +26,7 @@ namespace PriceMonitor
 
         public string Name { get; set; }
         public string UrlAPI { get; set; }
-        public string Url { get; set; }
+        public  string Url { get; protected set; }
         public List<string> AvailableCoins { get; set; }
         public Dictionary<string, CurrentPrice> Price { get; set; }
 
@@ -39,5 +39,6 @@ namespace PriceMonitor
         {
             return Name+": "+AvailableCoins.Count+"\r\n";
         }
+        public abstract string GetUrl(string coin);
     }
 }

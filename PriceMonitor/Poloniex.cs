@@ -44,5 +44,9 @@ namespace PriceMonitor
             pr.bid = double.Parse(pp.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
             Price[coin]=pr;
         }
+        public override string GetUrl(string coin)
+        {
+            return Url + coin;
+        }
     }
 }
