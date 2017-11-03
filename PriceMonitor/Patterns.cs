@@ -31,7 +31,7 @@ namespace PriceMonitor
     class CurrencyLiqui
     {
         public int server_time { get; set; }
-        public List<List<object>> pairs { get; set; }
+        public Dictionary<string,object> pairs { get; set; }
     }
 
     struct PriceLiqui

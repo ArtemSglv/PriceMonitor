@@ -36,7 +36,7 @@ namespace PriceMonitor
         {
             List<string> res = new List<string>();
             CurrencyLiqui curLiq = JsonConvert.DeserializeObject<CurrencyLiqui>(str);
-            //curLiq.pairs.ForEach(x=> { x.Keys.ToList().ForEach(k=> { if (k.Contains("_btc")) res.Add(k.Substring(0, x.ToString().Length - 4)); });  });
+            curLiq.pairs.Keys.ToList().ForEach(x=> { if (x.Contains("_btc")) res.Add(x.Substring(0, x.ToString().Length - 4).ToUpper()); });
             res.Sort();
             return res;
         }
@@ -81,7 +81,10 @@ namespace PriceMonitor
                 if (listAssets.Count == 0)
                     listAssets.AddRange(ex.AvailableCoins);
                 else
-                    listAssets.Union(ex.AvailableCoins);
+                {
+                    listAssets = listAssets.Union(ex.AvailableCoins).ToList();
+                    listAssets.Sort();
+                }
             }
         }
 

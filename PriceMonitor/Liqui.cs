@@ -28,20 +28,21 @@ namespace PriceMonitor
             string command = "depth/" + coin.ToLower() + "_btc?limit=1";
             string resp = Engine.Request(UrlAPI + command);
 
-            if (resp.Contains("Invalid currency pair."))
+            if (resp.Contains("Invalid pair name") || resp.Contains("Requests too often"))
             {
                 Price.Remove(coin);
                 //Price[coin].Clear();
                 return;
             }
 
-            resp = resp.Replace("[[", "{");
-            resp = resp.Replace("]]", "}");
+            resp = resp.Replace("[[", "[");
+            resp = resp.Replace("]]", "]");
+            resp = resp.Replace(coin.ToLower()+"_btc","coin");
 
             PriceLiqui pl = Engine.DeserializeToPriceLiqui(resp);
             CurrentPrice pr;
-            pr.ask = double.Parse(pl.coin["asks"][0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-            pr.bid = double.Parse(pl.coin["bids"][0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+            pr.ask = pl.coin["asks"][0];
+            pr.bid = pl.coin["bids"][0];
             Price[coin] = pr;
         }
 
