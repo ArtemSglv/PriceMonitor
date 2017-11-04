@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Bittrex.cs" />
     <Compile Include="Engine.cs" />
+    <Compile Include="Kraken.cs" />
     <Compile Include="Liqui.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

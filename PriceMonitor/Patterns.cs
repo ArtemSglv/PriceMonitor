@@ -39,4 +39,10 @@ namespace PriceMonitor
         public Dictionary<string, List<double>> coin { get; set; }
     }
 
+    class CurrencyKraken
+    {
+        public object[] error { get; set; }
+        public Dictionary<string, Dictionary<string,object>> result { get; set; }
+    }
+
 }

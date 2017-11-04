@@ -21,7 +21,8 @@ namespace PriceMonitor
             {
                 new Poloniex(),
                 new Bittrex(),
-                new Liqui()
+                new Liqui(),
+                new Kraken()
             };
             listAssets = new List<string>();
             
@@ -30,6 +31,15 @@ namespace PriceMonitor
         public static string Request(string url)
         {
             return new WebClient().DownloadString(url);
+        }
+
+        public static List<string> DeserializeToAssetsKraken(string str)
+        {
+            List<string> res = new List<string>();
+            CurrencyKraken curKrak = JsonConvert.DeserializeObject<CurrencyKraken>(str);
+            curKrak.result.Keys.ToList().ForEach(x => { res.Add((curKrak.result[x])["altname"].ToString()); });
+            res.Sort();
+            return res;
         }
 
         public static List<string> DeserializeToAssetsLiqui(string str)
@@ -61,6 +71,11 @@ namespace PriceMonitor
         }
 
         public static PriceLiqui DeserializeToPriceLiqui(string str)
+        {
+            return JsonConvert.DeserializeObject<PriceLiqui>(str);
+        }
+
+        public static PriceLiqui DeserializeToPriceKraken(string str)
         {
             return JsonConvert.DeserializeObject<PriceLiqui>(str);
         }
