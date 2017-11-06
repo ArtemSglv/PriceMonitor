@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace PriceMonitor
 {
-    class Kraken:StockExchange
+    class Bitfinex:StockExchange
     {
-        public Kraken()
+        public Bitfinex()
         {
-            Name = "Kraken";
-            UrlAPI = "https://api.kraken.com/0/public/";
-            Url = "https://kraken.com/charts";
+            Name = "Bitfinex";
+            UrlAPI = "https://api.bitfinex.com/v1";
+            Url = "https://";
             AvailableCoins = GetAssets();
             Price = new Dictionary<string, CurrentPrice>();
         }
@@ -28,7 +28,7 @@ namespace PriceMonitor
             string command = "Depth?pair=" + coin + "XBT&count=1";
             string resp = Engine.Request(UrlAPI + command);
 
-            if (resp.Contains("Unknown asset pair") )
+            if (resp.Contains("Unknown asset pair"))
             {
                 Price.Remove(coin);
                 //Price[coin].Clear();
@@ -38,8 +38,8 @@ namespace PriceMonitor
             resp = resp.Substring(21, resp.Length - 22);
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
-            resp = resp.Remove(0,resp.IndexOf(':'));
-            resp = "{\"coin\""+resp;
+            resp = resp.Remove(0, resp.IndexOf(':'));
+            resp = "{\"coin\"" + resp;
 
             PriceLiqui pl = Engine.DeserializeToPriceKraken(resp);
             CurrentPrice pr;

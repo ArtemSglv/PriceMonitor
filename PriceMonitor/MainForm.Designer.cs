@@ -40,6 +40,7 @@
             this.labelPoloniex = new System.Windows.Forms.Label();
             this.panelStatus = new System.Windows.Forms.Panel();
             this.labelTimeRefresh = new System.Windows.Forms.Label();
+            this.labelKraken = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panelWhite.SuspendLayout();
             this.panelStatus.SuspendLayout();
@@ -106,6 +107,7 @@
             this.panelWhite.AutoScroll = true;
             this.panelWhite.AutoSize = true;
             this.panelWhite.BackColor = System.Drawing.Color.White;
+            this.panelWhite.Controls.Add(this.labelKraken);
             this.panelWhite.Controls.Add(this.labelLiqui);
             this.panelWhite.Controls.Add(this.labelBittrex);
             this.panelWhite.Controls.Add(this.label1);
@@ -175,6 +177,18 @@
             this.labelTimeRefresh.Size = new System.Drawing.Size(0, 13);
             this.labelTimeRefresh.TabIndex = 0;
             // 
+            // labelKraken
+            // 
+            this.labelKraken.BackColor = System.Drawing.Color.White;
+            this.labelKraken.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelKraken.Location = new System.Drawing.Point(547, 29);
+            this.labelKraken.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelKraken.Name = "labelKraken";
+            this.labelKraken.Size = new System.Drawing.Size(94, 14);
+            this.labelKraken.TabIndex = 7;
+            this.labelKraken.Text = "Kraken.com";
+            this.labelKraken.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -213,6 +227,7 @@
         private System.Windows.Forms.Label labelBittrex;
         private System.Windows.Forms.Label labelTimeRefresh;
         private System.Windows.Forms.Label labelLiqui;
+        private System.Windows.Forms.Label labelKraken;
     }
 }
 

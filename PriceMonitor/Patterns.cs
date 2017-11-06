@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PriceMonitor
 {
-    class PricePoloniex
+    struct PricePoloniex
     {
         public List<object> Bids { get; set; }
         public List<object> Asks { get; set; }
@@ -14,7 +14,7 @@ namespace PriceMonitor
         public object seq { get; set; }
     }
 
-    class CurrencyBittrex
+    struct CurrencyBittrex
     {
         public bool success { get; set; }
         public string message { get; set; }
@@ -28,7 +28,7 @@ namespace PriceMonitor
         public Dictionary<string, double> result { get; set; }
     }
 
-    class CurrencyLiqui
+    struct CurrencyLiqui
     {
         public int server_time { get; set; }
         public Dictionary<string,object> pairs { get; set; }
@@ -39,10 +39,15 @@ namespace PriceMonitor
         public Dictionary<string, List<double>> coin { get; set; }
     }
 
-    class CurrencyKraken
+    struct CurrencyKraken
     {
         public object[] error { get; set; }
         public Dictionary<string, Dictionary<string,object>> result { get; set; }
+    }
+
+    struct PriceKraken
+    {
+        public Dictionary<string, List<double>> coin { get; set; }
     }
 
 }
