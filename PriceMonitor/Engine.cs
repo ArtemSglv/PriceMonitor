@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Net;
 using Newtonsoft.Json;
+using System.Windows.Forms;
 
 namespace PriceMonitor
 {
@@ -22,7 +23,8 @@ namespace PriceMonitor
                 new Poloniex(),
                 new Bittrex(),
                 new Liqui(),
-                new Kraken()
+                new Kraken(),
+                new Bitfinex()
             };
             listAssets = new List<string>();
             
@@ -30,7 +32,25 @@ namespace PriceMonitor
 
         public static string Request(string url)
         {
-            return new WebClient().DownloadString(url);
+            try
+            {
+                return new WebClient().DownloadString(url);
+            }
+            catch (WebException)
+            {
+                //MessageBox.Show(ex.Message + "\r\n" + ex.Response);
+                return "";
+            }
+        }
+
+        public static List<string> DeserializeToAssetsBitfinex(string str)
+        {
+            string sPattern= "^\\w*btc$";
+            List<string> res = new List<string>();
+            List<string> curBitfin = JsonConvert.DeserializeObject<List<string>>(str);
+            curBitfin.ForEach(x => { if (System.Text.RegularExpressions.Regex.IsMatch(x, sPattern)) res.Add(x.Remove(x.Length-3).ToUpper()); });
+            res.Sort();
+            return res;
         }
 
         public static List<string> DeserializeToAssetsKraken(string str)
@@ -78,6 +98,11 @@ namespace PriceMonitor
         public static PriceLiqui DeserializeToPriceKraken(string str)
         {
             return JsonConvert.DeserializeObject<PriceLiqui>(str);
+        }
+
+        public static Dictionary<string, Dictionary<string, double>> DeserializeToPriceBitfinex(string str)
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string,Dictionary<string,double>>>(str);
         }
 
         public static Dictionary<string, double> DeserializeToPriceBittrex(string str)

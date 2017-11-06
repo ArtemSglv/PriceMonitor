@@ -36,9 +36,12 @@ namespace PriceMonitor
             
             Dictionary<string,double> dict=Engine.DeserializeToPriceBittrex(resp);
             CurrentPrice pr;
-            pr.ask= dict["Ask"];
-            pr.bid= dict["Bid"];
-            Price[coin] = pr;
+            if (dict != null)
+            {
+                pr.ask = dict["Ask"];
+                pr.bid = dict["Bid"];
+                Price[coin] = pr;
+            }
         }
 
         public override string GetUrl(string coin)

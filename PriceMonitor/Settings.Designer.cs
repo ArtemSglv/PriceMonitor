@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             this.IntervalLabel = new System.Windows.Forms.Label();
             this.labelSign = new System.Windows.Forms.Label();
             this.textBoxFreq = new System.Windows.Forms.TextBox();
@@ -90,6 +91,7 @@
             this.Controls.Add(this.textBoxFreq);
             this.Controls.Add(this.labelSign);
             this.Controls.Add(this.IntervalLabel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Settings";
             this.Text = "Настройки";
             this.ResumeLayout(false);

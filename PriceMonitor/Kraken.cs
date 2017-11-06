@@ -43,9 +43,12 @@ namespace PriceMonitor
 
             PriceLiqui pl = Engine.DeserializeToPriceKraken(resp);
             CurrentPrice pr;
-            pr.ask = pl.coin["asks"][0];
-            pr.bid = pl.coin["bids"][0];
-            Price[coin] = pr;
+            if (!pl.Equals(null))
+            {
+                pr.ask = pl.coin["asks"][0];
+                pr.bid = pl.coin["bids"][0];
+                Price[coin] = pr;
+            }
         }
 
         public override string GetUrl(string coin)

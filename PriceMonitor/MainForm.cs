@@ -97,17 +97,7 @@ namespace PriceMonitor
             ScanAssets();
             CreateRow();
         }
-        //void DataUpdater(object sender, EventArgs e)
-        //{
-        //    GetPriceInThread();
-        //}
-        //void InitAndStartTimer()
-        //{
-        //    tmr = new System.Timers.Timer();            
-        //    tmr.Elapsed += GetPriceInThread;
-        //    tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
-        //    tmr.Start();
-        //}
+       
         void CreateRow()
         {
             rows.Add(new Row());
@@ -160,6 +150,7 @@ namespace PriceMonitor
         }
         void GetPriceInThread(object sender, EventArgs e)
         {
+            var n=Thread.CurrentThread.Name;
             engine.exchanges.ForEach
                 (
                     x => {

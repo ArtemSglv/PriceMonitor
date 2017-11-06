@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PriceMonitor
 {
-    class Liqui:StockExchange
+    class Liqui : StockExchange
     {
         public Liqui()
         {
@@ -37,18 +37,21 @@ namespace PriceMonitor
 
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
-            resp = resp.Replace(coin.ToLower()+"_btc","coin");
+            resp = resp.Replace(coin.ToLower() + "_btc", "coin");
 
             PriceLiqui pl = Engine.DeserializeToPriceLiqui(resp);
             CurrentPrice pr;
-            pr.ask = pl.coin["asks"][0];
-            pr.bid = pl.coin["bids"][0];
-            Price[coin] = pr;
+            if (!pl.Equals(null))
+            {
+                pr.ask = pl.coin["asks"][0];
+                pr.bid = pl.coin["bids"][0];
+                Price[coin] = pr;
+            }
         }
 
         public override string GetUrl(string coin)
         {
-            return Url + coin+"_BTC";
+            return Url + coin + "_BTC";
         }
     }
 }

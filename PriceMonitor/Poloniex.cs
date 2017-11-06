@@ -40,9 +40,12 @@ namespace PriceMonitor
 
             PricePoloniex pp = Engine.DeserializeToPricePoloniex(resp);
             CurrentPrice pr;
-            pr.ask = double.Parse(pp.Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-            pr.bid = double.Parse(pp.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-            Price[coin]=pr;
+            if (!pp.Equals(null))
+            {
+                pr.ask = double.Parse(pp.Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                pr.bid = double.Parse(pp.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                Price[coin] = pr;
+            }
         }
         public override string GetUrl(string coin)
         {
