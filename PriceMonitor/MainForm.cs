@@ -17,6 +17,10 @@ namespace PriceMonitor
         List<Row> rows = new List<Row>();
         static Engine engine = new Engine();
         System.Timers.Timer tmr;
+        public static System.Threading.Timer timer;
+        static object locker = new object();
+
+        
 
         class Row
         {
@@ -100,12 +104,12 @@ namespace PriceMonitor
        
         void CreateRow()
         {
-            rows.Add(new Row());
-            rows.Last().CreateRow();
-            rows.Last().cb.Items.AddRange(engine.listAssets.ToArray<object>());
-            rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
-            panelWhite.Controls.Add(rows.Last().cb);
-            panelWhite.Controls.AddRange(rows.Last().buttons.ToArray());
+                rows.Add(new Row());
+                rows.Last().CreateRow();
+                rows.Last().cb.Items.AddRange(engine.listAssets.ToArray<object>());
+                rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
+                panelWhite.Controls.Add(rows.Last().cb);
+                panelWhite.Controls.AddRange(rows.Last().buttons.ToArray());
         }
         void SetCoord()
         {
@@ -134,7 +138,49 @@ namespace PriceMonitor
             if (cb.Items.Count == 0)
                 cb.Items.AddRange(engine.listAssets.ToArray<object>());
         }
+        // в потоке таймера
+        void AutoUpdate(object obj)
+        {
+            
+                //timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+                engine.exchanges.ForEach
+                    (
+                        x =>
+                        {
+                            x.Price.Keys.ToList().ForEach
+                         (
+                             k =>
+                             {
+                                 engine.GetPrice(k);
+                             }
+                          );
+                        });
+                // InvalidOperationException
+                try
+                {
+                    rows.ForEach(x =>
+                    {
+                        x.cb.BeginInvoke(new Action(() =>
+                        {
+                            x.FillData();                            
+                        }));
+                    });
+                }
+                catch(InvalidOperationException)
+                {
 
+                }           
+            
+            labelTimeRefresh.Invoke(new Action(()=> 
+            { labelTimeRefresh.Text = string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now); }));
+
+        }
+        void TimerInThread()
+        {
+            TimerCallback tm = new TimerCallback(AutoUpdate);
+            // создаем таймер
+            timer = new System.Threading.Timer(tm, null, 0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+        }
         void UpdateData(object sender = null) // заполнение кнопок данными
         {
             ComboBox cb = (ComboBox)sender;
@@ -215,8 +261,11 @@ namespace PriceMonitor
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            
             Init();
-            StartTimerInThread();
+            //StartTimerInThread();
+            TimerInThread();
+
         }
 
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)

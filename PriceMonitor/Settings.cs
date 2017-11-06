@@ -21,7 +21,10 @@ namespace PriceMonitor
         private void butAccept_Click(object sender, EventArgs e)
         {
             if (textBoxFreq.Text != "")
+            {
                 ConfigurationManager.AppSettings.Set("frequencyUpdate", textBoxFreq.Text);
+                MainForm.timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+            }
             if (textBoxCountDigit.Text != "")
                 ConfigurationManager.AppSettings.Set("countDigitAfterComma", textBoxCountDigit.Text);
             Close();
