@@ -154,7 +154,6 @@ namespace PriceMonitor
         // в потоке таймера
         void AutoUpdate(object obj)
         {
-            
                 //timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
                 engine.exchanges.ForEach
                     (
