@@ -13,7 +13,7 @@ namespace PriceMonitor
             Name = "Liqui";
             UrlAPI = "https://api.liqui.io/api/3/";
             Url = "https://liqui.io/#/exchange/";
-            AvailableCoins = GetAssets();
+            AvailableCoins = new List<string>();
             Price = new Dictionary<string, CurrentPrice>();
         }
 

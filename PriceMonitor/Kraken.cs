@@ -13,7 +13,7 @@ namespace PriceMonitor
             Name = "Kraken";
             UrlAPI = "https://api.kraken.com/0/public/";
             Url = "https://kraken.com/charts";
-            AvailableCoins = GetAssets();
+            AvailableCoins = new List<string>();
             Price = new Dictionary<string, CurrentPrice>();
         }
 

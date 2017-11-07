@@ -98,8 +98,20 @@ namespace PriceMonitor
         }
         void Init()
         {
-            ScanAssets();
+            try
+            {
+                ScanAssets();
+            }
+            catch(System.Net.WebException ex)
+            {
+                if (ex.Message.Contains("Невозможно разрешить удаленное имя"))
+                    MessageBox.Show(ex.Message + "\r\nПроверьте подключение к Интернету!");
+                else
+                    MessageBox.Show(ex.Message);
+                Close();
+            }
             CreateRow();
+            //ScanAssets();
         }
        
         void CreateRow()
@@ -123,13 +135,14 @@ namespace PriceMonitor
         void ScanAssets()
         {
             string str = "";
-            Thread trd = new Thread(delegate ()
-            {
+            //Thread trd = new Thread(delegate ()
+            //{
                 engine.ScanAssets();
                 engine.exchanges.ForEach(x => str += x.ToString());
-            });
-            trd.Start();
-            trd.Join();
+                //MessageBox.Show("Найдено монет:\r\n" + str);
+            //});
+            //trd.Start();
+            //trd.Join();
             MessageBox.Show("Найдено монет:\r\n" + str);
         }
         void FillComboBox(ComboBox cb)
@@ -243,7 +256,10 @@ namespace PriceMonitor
             ComboBox cb = (ComboBox)sender;
 
             // отрисовка кнопок при выборе монеты
-            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();                      
+            rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
+
+            engine.exchanges.ForEach(x=> { x.Price.Add(cb.SelectedItem.ToString(),new StockExchange.CurrentPrice()); });
+            timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
 
             // Создание новой строки            
             if (rows.Last().cb.Equals(cb))
@@ -253,10 +269,10 @@ namespace PriceMonitor
             }
 
             // запрос цен в отдельном потоке
-            GetPriceInThread(cb.SelectedItem.ToString());
+            //GetPriceInThread(cb.SelectedItem.ToString());
 
             // заполнение кнопок для определенного комбобокса
-            UpdateData(sender);
+            //UpdateData(sender);
         }
 
         private void MainForm_Load(object sender, EventArgs e)

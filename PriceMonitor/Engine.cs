@@ -27,28 +27,31 @@ namespace PriceMonitor
                 new Bitfinex()
             };
             listAssets = new List<string>();
-            
+
         }
 
         public static string Request(string url)
         {
-            try
-            {
+            //try
+            //{
                 return new WebClient().DownloadString(url);
-            }
-            catch (WebException)
-            {
-                //MessageBox.Show(ex.Message + "\r\n" + ex.Response);
-                return "";
-            }
+            //}
+            //catch (WebException ex)
+            //{
+            //    if (ex.Message.Contains("Невозможно разрешить удаленное имя"))
+            //        MessageBox.Show(ex.Message + "\r\nПроверьте подключение к Интернету!");
+            //    else
+            //        MessageBox.Show(ex.Message);
+            //    return string.Empty;
+            //}
         }
 
         public static List<string> DeserializeToAssetsBitfinex(string str)
         {
-            string sPattern= "^\\w*btc$";
+            string sPattern = "^\\w*btc$";
             List<string> res = new List<string>();
             List<string> curBitfin = JsonConvert.DeserializeObject<List<string>>(str);
-            curBitfin.ForEach(x => { if (System.Text.RegularExpressions.Regex.IsMatch(x, sPattern)) res.Add(x.Remove(x.Length-3).ToUpper()); });
+            curBitfin.ForEach(x => { if (System.Text.RegularExpressions.Regex.IsMatch(x, sPattern)) res.Add(x.Remove(x.Length - 3).ToUpper()); });
             res.Sort();
             return res;
         }
@@ -66,7 +69,7 @@ namespace PriceMonitor
         {
             List<string> res = new List<string>();
             CurrencyLiqui curLiq = JsonConvert.DeserializeObject<CurrencyLiqui>(str);
-            curLiq.pairs.Keys.ToList().ForEach(x=> { if (x.Contains("_btc")) res.Add(x.Substring(0, x.ToString().Length - 4).ToUpper()); });
+            curLiq.pairs.Keys.ToList().ForEach(x => { if (x.Contains("_btc")) res.Add(x.Substring(0, x.ToString().Length - 4).ToUpper()); });
             res.Sort();
             return res;
         }
@@ -102,7 +105,7 @@ namespace PriceMonitor
 
         public static Dictionary<string, Dictionary<string, double>> DeserializeToPriceBitfinex(string str)
         {
-            return JsonConvert.DeserializeObject<Dictionary<string,Dictionary<string,double>>>(str);
+            return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(str);
         }
 
         public static Dictionary<string, double> DeserializeToPriceBittrex(string str)
@@ -116,16 +119,16 @@ namespace PriceMonitor
 
         public void ScanAssets()
         {
-            foreach (StockExchange ex in exchanges)
-            {
-                if (listAssets.Count == 0)
-                    listAssets.AddRange(ex.AvailableCoins);
-                else
+                foreach (StockExchange ex in exchanges)
                 {
-                    listAssets = listAssets.Union(ex.AvailableCoins).ToList();
-                    listAssets.Sort();
+                    if (listAssets.Count == 0)
+                        listAssets.AddRange(ex.GetAssets());
+                    else
+                    {
+                        listAssets = listAssets.Union(ex.GetAssets()).ToList();
+                        listAssets.Sort();
+                    }
                 }
-            }
         }
 
         public void GetPrice(string coin)

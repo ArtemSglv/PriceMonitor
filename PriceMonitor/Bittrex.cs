@@ -13,7 +13,7 @@ namespace PriceMonitor
             Name = "Bittrex";
             UrlAPI = "https://bittrex.com/api/v1.1/public/";
             Url = "https://bittrex.com/Market/Index?MarketName=BTC-";
-            AvailableCoins=GetAssets();
+            AvailableCoins = new List<string>();
             Price = new Dictionary<string, CurrentPrice>();
         }
 

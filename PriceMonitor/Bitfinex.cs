@@ -13,7 +13,7 @@ namespace PriceMonitor
             Name = "Bitfinex";
             UrlAPI = "https://api.bitfinex.com/v1/";
             Url = "https://www.bitfinex.com/t/";
-            AvailableCoins = GetAssets();
+            AvailableCoins = new List<string>();
             Price = new Dictionary<string, CurrentPrice>();
         }
 

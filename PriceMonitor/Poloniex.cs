@@ -13,20 +13,20 @@ namespace PriceMonitor
             Name = "Poloniex";
             UrlAPI = "https://poloniex.com/public?command=";
             Url = "https://poloniex.com/exchange#btc_";
-            AvailableCoins=GetAssets();
+            AvailableCoins = new List<string>();
             Price = new Dictionary<string, CurrentPrice>();
         }
 
         public override List<string> GetAssets()
         {
             string command = "returnCurrencies";
-            return Engine.DeserializeToAssetsPoloniex(Engine.Request(UrlAPI + command));            
+            return Engine.DeserializeToAssetsPoloniex(Engine.Request(UrlAPI + command));
         }
 
         public override void GetPrice(string coin)
         {
-            string command ="returnOrderBook&currencyPair=BTC_" + coin + "&depth=1";
-            string resp = Engine.Request(UrlAPI+command);
+            string command = "returnOrderBook&currencyPair=BTC_" + coin + "&depth=1";
+            string resp = Engine.Request(UrlAPI + command);
 
             if (resp.Contains("Invalid currency pair."))
             {
