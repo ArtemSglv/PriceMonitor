@@ -30,8 +30,7 @@ namespace PriceMonitor
 
             if (resp.Contains("Invalid pair name") || resp.Contains("Requests too often"))
             {
-                Price.Remove(coin);
-                //Price[coin].Clear();
+                //Price.Remove(coin);
                 return;
             }
 
@@ -41,7 +40,7 @@ namespace PriceMonitor
 
             PriceLiqui pl = Engine.DeserializeToPriceLiqui(resp);
             CurrentPrice pr;
-            if (!pl.Equals(null))
+            if (pl.coin!=null && pl.coin["asks"].Count!=0 && pl.coin["bids"].Count != 0)
             {
                 pr.ask = pl.coin["asks"][0];
                 pr.bid = pl.coin["bids"][0];

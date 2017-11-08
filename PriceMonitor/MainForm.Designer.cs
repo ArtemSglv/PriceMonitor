@@ -43,6 +43,7 @@
             this.labelPoloniex = new System.Windows.Forms.Label();
             this.panelStatus = new System.Windows.Forms.Panel();
             this.labelTimeRefresh = new System.Windows.Forms.Label();
+            this.panelForControl = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.panelWhite.SuspendLayout();
             this.panelStatus.SuspendLayout();
@@ -56,8 +57,8 @@
             this.настройкаToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(796, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(1091, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -66,13 +67,13 @@
             this.менюToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.выходToolStripMenuItem});
             this.менюToolStripMenuItem.Name = "менюToolStripMenuItem";
-            this.менюToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.менюToolStripMenuItem.Size = new System.Drawing.Size(63, 24);
             this.менюToolStripMenuItem.Text = "Меню";
             // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
@@ -81,13 +82,13 @@
             this.настройкаToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.параметрыToolStripMenuItem});
             this.настройкаToolStripMenuItem.Name = "настройкаToolStripMenuItem";
-            this.настройкаToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.настройкаToolStripMenuItem.Size = new System.Drawing.Size(95, 24);
             this.настройкаToolStripMenuItem.Text = "Настройка";
             // 
             // параметрыToolStripMenuItem
             // 
             this.параметрыToolStripMenuItem.Name = "параметрыToolStripMenuItem";
-            this.параметрыToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.параметрыToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.параметрыToolStripMenuItem.Text = "Параметры";
             this.параметрыToolStripMenuItem.Click += new System.EventHandler(this.параметрыToolStripMenuItem_Click);
             // 
@@ -96,40 +97,40 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.White;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(11, 29);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(15, 11);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 13);
+            this.label1.Size = new System.Drawing.Size(126, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "Монета / Биржа";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panelWhite
             // 
+            this.panelWhite.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panelWhite.AutoScroll = true;
-            this.panelWhite.AutoSize = true;
             this.panelWhite.BackColor = System.Drawing.Color.White;
+            this.panelWhite.Controls.Add(this.panelForControl);
             this.panelWhite.Controls.Add(this.labelBitfinex);
             this.panelWhite.Controls.Add(this.labelKraken);
             this.panelWhite.Controls.Add(this.labelLiqui);
             this.panelWhite.Controls.Add(this.labelBittrex);
             this.panelWhite.Controls.Add(this.label1);
             this.panelWhite.Controls.Add(this.labelPoloniex);
-            this.panelWhite.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelWhite.Location = new System.Drawing.Point(0, 0);
-            this.panelWhite.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelWhite.Location = new System.Drawing.Point(0, 30);
+            this.panelWhite.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelWhite.Name = "panelWhite";
-            this.panelWhite.Size = new System.Drawing.Size(796, 356);
+            this.panelWhite.Size = new System.Drawing.Size(1091, 408);
             this.panelWhite.TabIndex = 3;
             // 
             // labelBitfinex
             // 
             this.labelBitfinex.BackColor = System.Drawing.Color.White;
             this.labelBitfinex.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelBitfinex.Location = new System.Drawing.Point(681, 29);
-            this.labelBitfinex.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelBitfinex.Location = new System.Drawing.Point(908, 11);
             this.labelBitfinex.Name = "labelBitfinex";
-            this.labelBitfinex.Size = new System.Drawing.Size(94, 14);
+            this.labelBitfinex.Size = new System.Drawing.Size(125, 17);
             this.labelBitfinex.TabIndex = 8;
             this.labelBitfinex.Text = "Bitfinex.com";
             this.labelBitfinex.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -138,10 +139,9 @@
             // 
             this.labelKraken.BackColor = System.Drawing.Color.White;
             this.labelKraken.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelKraken.Location = new System.Drawing.Point(547, 29);
-            this.labelKraken.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelKraken.Location = new System.Drawing.Point(729, 11);
             this.labelKraken.Name = "labelKraken";
-            this.labelKraken.Size = new System.Drawing.Size(94, 14);
+            this.labelKraken.Size = new System.Drawing.Size(125, 17);
             this.labelKraken.TabIndex = 7;
             this.labelKraken.Text = "Kraken.com";
             this.labelKraken.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -150,10 +150,9 @@
             // 
             this.labelLiqui.BackColor = System.Drawing.Color.White;
             this.labelLiqui.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelLiqui.Location = new System.Drawing.Point(414, 29);
-            this.labelLiqui.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelLiqui.Location = new System.Drawing.Point(552, 11);
             this.labelLiqui.Name = "labelLiqui";
-            this.labelLiqui.Size = new System.Drawing.Size(94, 14);
+            this.labelLiqui.Size = new System.Drawing.Size(125, 17);
             this.labelLiqui.TabIndex = 6;
             this.labelLiqui.Text = "Liqui.io";
             this.labelLiqui.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -162,10 +161,9 @@
             // 
             this.labelBittrex.BackColor = System.Drawing.Color.White;
             this.labelBittrex.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelBittrex.Location = new System.Drawing.Point(279, 29);
-            this.labelBittrex.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelBittrex.Location = new System.Drawing.Point(372, 11);
             this.labelBittrex.Name = "labelBittrex";
-            this.labelBittrex.Size = new System.Drawing.Size(94, 14);
+            this.labelBittrex.Size = new System.Drawing.Size(125, 17);
             this.labelBittrex.TabIndex = 5;
             this.labelBittrex.Text = "Bittrex.com";
             this.labelBittrex.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -174,10 +172,9 @@
             // 
             this.labelPoloniex.BackColor = System.Drawing.Color.White;
             this.labelPoloniex.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelPoloniex.Location = new System.Drawing.Point(147, 29);
-            this.labelPoloniex.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelPoloniex.Location = new System.Drawing.Point(196, 11);
             this.labelPoloniex.Name = "labelPoloniex";
-            this.labelPoloniex.Size = new System.Drawing.Size(94, 14);
+            this.labelPoloniex.Size = new System.Drawing.Size(125, 17);
             this.labelPoloniex.TabIndex = 4;
             this.labelPoloniex.Text = "Poloniex.com";
             this.labelPoloniex.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -187,10 +184,10 @@
             this.panelStatus.BackColor = System.Drawing.Color.Gray;
             this.panelStatus.Controls.Add(this.labelTimeRefresh);
             this.panelStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelStatus.Location = new System.Drawing.Point(0, 356);
-            this.panelStatus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelStatus.Location = new System.Drawing.Point(0, 438);
+            this.panelStatus.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelStatus.Name = "panelStatus";
-            this.panelStatus.Size = new System.Drawing.Size(796, 23);
+            this.panelStatus.Size = new System.Drawing.Size(1091, 28);
             this.panelStatus.TabIndex = 3;
             // 
             // labelTimeRefresh
@@ -198,23 +195,29 @@
             this.labelTimeRefresh.AutoSize = true;
             this.labelTimeRefresh.BackColor = System.Drawing.Color.Transparent;
             this.labelTimeRefresh.ForeColor = System.Drawing.Color.Snow;
-            this.labelTimeRefresh.Location = new System.Drawing.Point(8, 4);
-            this.labelTimeRefresh.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelTimeRefresh.Location = new System.Drawing.Point(11, 5);
             this.labelTimeRefresh.Name = "labelTimeRefresh";
-            this.labelTimeRefresh.Size = new System.Drawing.Size(0, 13);
+            this.labelTimeRefresh.Size = new System.Drawing.Size(0, 17);
             this.labelTimeRefresh.TabIndex = 0;
+            // 
+            // panelForControl
+            // 
+            this.panelForControl.Location = new System.Drawing.Point(22, 49);
+            this.panelForControl.Name = "panelForControl";
+            this.panelForControl.Size = new System.Drawing.Size(1039, 252);
+            this.panelForControl.TabIndex = 9;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(796, 379);
+            this.ClientSize = new System.Drawing.Size(1091, 466);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panelWhite);
             this.Controls.Add(this.panelStatus);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MainForm";
             this.Text = "PriceMonitor";
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -245,6 +248,7 @@
         private System.Windows.Forms.Label labelLiqui;
         private System.Windows.Forms.Label labelKraken;
         private System.Windows.Forms.Label labelBitfinex;
+        private System.Windows.Forms.Panel panelForControl;
     }
 }
 

@@ -32,18 +32,7 @@ namespace PriceMonitor
 
         public static string Request(string url)
         {
-            //try
-            //{
-                return new WebClient().DownloadString(url);
-            //}
-            //catch (WebException ex)
-            //{
-            //    if (ex.Message.Contains("Невозможно разрешить удаленное имя"))
-            //        MessageBox.Show(ex.Message + "\r\nПроверьте подключение к Интернету!");
-            //    else
-            //        MessageBox.Show(ex.Message);
-            //    return string.Empty;
-            //}
+            return new WebClient().DownloadString(url);
         }
 
         public static List<string> DeserializeToAssetsBitfinex(string str)
@@ -98,9 +87,9 @@ namespace PriceMonitor
             return JsonConvert.DeserializeObject<PriceLiqui>(str);
         }
 
-        public static PriceLiqui DeserializeToPriceKraken(string str)
+        public static PriceKraken DeserializeToPriceKraken(string str)
         {
-            return JsonConvert.DeserializeObject<PriceLiqui>(str);
+            return JsonConvert.DeserializeObject<PriceKraken>(str);
         }
 
         public static Dictionary<string, Dictionary<string, double>> DeserializeToPriceBitfinex(string str)
@@ -119,24 +108,33 @@ namespace PriceMonitor
 
         public void ScanAssets()
         {
-                foreach (StockExchange ex in exchanges)
+            foreach (StockExchange ex in exchanges)
+            {
+                if (listAssets.Count == 0)
+                    listAssets.AddRange(ex.AvailableCoins = ex.GetAssets());
+                else
                 {
-                    if (listAssets.Count == 0)
-                        listAssets.AddRange(ex.GetAssets());
-                    else
-                    {
-                        listAssets = listAssets.Union(ex.GetAssets()).ToList();
-                        listAssets.Sort();
-                    }
+                    listAssets = listAssets.Union(ex.AvailableCoins = ex.GetAssets()).ToList();
+                    listAssets.Sort();
                 }
+            }
         }
 
         public void GetPrice(string coin)
         {
-            exchanges.ForEach(x =>
+            try
+            {                
+                exchanges.ForEach(x =>
+                {
+                    x.GetPrice(coin);
+                });
+            }
+            catch (System.Net.WebException ex)
             {
-                x.GetPrice(coin);
-            });
+                if (ex.Message.Contains("Too Many Requests"))
+                    Thread.Sleep(95000);
+
+            }
         }
     }
 }

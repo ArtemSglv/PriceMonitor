@@ -41,9 +41,9 @@ namespace PriceMonitor
             resp = resp.Remove(0,resp.IndexOf(':'));
             resp = "{\"coin\""+resp;
 
-            PriceLiqui pl = Engine.DeserializeToPriceKraken(resp);
+            PriceKraken pl = Engine.DeserializeToPriceKraken(resp); //может быть без бида или аска ответ!!!
             CurrentPrice pr;
-            if (!pl.Equals(null))
+            if (pl.coin["asks"].Count!=0 && pl.coin["bids"].Count != 0)
             {
                 pr.ask = pl.coin["asks"][0];
                 pr.bid = pl.coin["bids"][0];

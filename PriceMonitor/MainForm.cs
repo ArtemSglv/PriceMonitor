@@ -16,11 +16,8 @@ namespace PriceMonitor
     {
         List<Row> rows = new List<Row>();
         static Engine engine = new Engine();
-        System.Timers.Timer tmr;
         public static System.Threading.Timer timer;
         static object locker = new object();
-
-        
 
         class Row
         {
@@ -31,9 +28,10 @@ namespace PriceMonitor
             public ComboBox cb;
             public List<Button> buttons;
 
-            public void CreateRow()
+            public void CreateRow(int scroll)
             {
-                int cbStartX = 11, cbStartY = 58;
+                //x=11 y=48
+                int cbStartX = 0, cbStartY = 10;
                 int stepY = 30;
 
                 //Row row = new Row();
@@ -44,13 +42,14 @@ namespace PriceMonitor
                 cb.MaxDropDownItems = 10;
                 cb.Location = new Point(cbStartX, cbStartY + (cb.Size.Height + stepY) * index);
                 buttons = new List<Button>();
-                CreateButtons();
+                CreateButtons(scroll);
                 //return row;
             }
 
-            void CreateButtons()
+            void CreateButtons(int scroll)
             {
-                int bStartX = 130, bStartY = 48;
+                //x=130 y=38
+                int bStartX = 119, bStartY = 0;
                 int stepX = 5, stepY = 10;
 
                 Button but;
@@ -62,11 +61,13 @@ namespace PriceMonitor
                     but.BackColor = Color.Transparent;
                     but.Visible = false;
                     but.Tag = engine.exchanges[i].Url;
-                    but.Click += (s, e) => {
+                    but.Click += (s, e) =>
+                    {
                         if (((Button)s).Text != "")
                             System.Diagnostics.Process.Start(
-                                engine.exchanges.Find(x=>x.Url== ((Button)s).Tag.ToString()).GetUrl(cb.SelectedItem.ToString())
-                                ); }; //переход в браузер на эту биржу
+                                engine.exchanges.Find(x => x.Url == ((Button)s).Tag.ToString()).GetUrl(cb.SelectedItem.ToString())
+                                );
+                    }; //переход в браузер на эту биржу
                     but.Location = new Point(bStartX + (but.Size.Width + stepX) * i, bStartY + (but.Size.Height + stepY) * index);
                     buttons.Add(but);
                 }
@@ -78,7 +79,7 @@ namespace PriceMonitor
                     foreach (Button but in buttons)
                         but.Visible = true;
                     visibleButtons = true;
-                }                
+                }
             }
             public void FillData() // print price into buttons
             {
@@ -98,30 +99,22 @@ namespace PriceMonitor
         }
         void Init()
         {
-            try
-            {
-                ScanAssets();
-            }
-            catch(System.Net.WebException ex)
-            {
-                if (ex.Message.Contains("Невозможно разрешить удаленное имя"))
-                    MessageBox.Show(ex.Message + "\r\nПроверьте подключение к Интернету!");
-                else
-                    MessageBox.Show(ex.Message);
-                Close();
-            }
+
+            ScanAssets();
             CreateRow();
             //ScanAssets();
         }
-       
+
         void CreateRow()
         {
-                rows.Add(new Row());
-                rows.Last().CreateRow();
-                rows.Last().cb.Items.AddRange(engine.listAssets.ToArray<object>());
-                rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
-                panelWhite.Controls.Add(rows.Last().cb);
-                panelWhite.Controls.AddRange(rows.Last().buttons.ToArray());
+            rows.Add(new Row());
+            rows.Last().CreateRow(panelWhite.VerticalScroll.Value);
+            rows.Last().cb.Items.AddRange(engine.listAssets.ToArray<object>());
+            rows.Last().cb.SelectedIndexChanged += comboBoxEventSelIndexChanged;
+            panelForControl.AutoSize = true;
+            //panelForControl.Size = new Size(panelForControl.Size.Width, panelForControl.Size.Width+80);
+            panelForControl.Controls.Add(rows.Last().cb);
+            panelForControl.Controls.AddRange(rows.Last().buttons.ToArray());
         }
         void SetCoord()
         {
@@ -135,83 +128,21 @@ namespace PriceMonitor
         void ScanAssets()
         {
             string str = "";
-            //Thread trd = new Thread(delegate ()
-            //{
-                engine.ScanAssets();
-                engine.exchanges.ForEach(x => str += x.ToString());
-                //MessageBox.Show("Найдено монет:\r\n" + str);
-            //});
-            //trd.Start();
-            //trd.Join();
+
+            engine.ScanAssets();
+            engine.exchanges.ForEach(x => str += x.ToString());
+
             MessageBox.Show("Найдено монет:\r\n" + str);
         }
-        void FillComboBox(ComboBox cb)
-        {
-            Thread.Sleep(0);
-            if (cb.Items.Count == 0)
-                cb.Items.AddRange(engine.listAssets.ToArray<object>());
-        }
+
         // в потоке таймера
         void AutoUpdate(object obj)
         {
-                //timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
-                engine.exchanges.ForEach
-                    (
-                        x =>
-                        {
-                            x.Price.Keys.ToList().ForEach
-                         (
-                             k =>
-                             {
-                                 engine.GetPrice(k);
-                             }
-                          );
-                        });
-                // InvalidOperationException
-                try
-                {
-                    rows.ForEach(x =>
-                    {
-                        x.cb.BeginInvoke(new Action(() =>
-                        {
-                            x.FillData();                            
-                        }));
-                    });
-                }
-                catch(InvalidOperationException)
-                {
 
-                }           
-            
-            labelTimeRefresh.Invoke(new Action(()=> 
-            { labelTimeRefresh.Text = string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now); }));
-
-        }
-        void TimerInThread()
-        {
-            TimerCallback tm = new TimerCallback(AutoUpdate);
-            // создаем таймер
-            timer = new System.Threading.Timer(tm, null, 0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
-        }
-        void UpdateData(object sender = null) // заполнение кнопок данными
-        {
-            ComboBox cb = (ComboBox)sender;
-            //for once
-            if (cb != null)
-            {
-                rows.Find(x => ( x.cb.Equals(cb))).FillData();
-                return;
-            }
-            //for all
-            rows.ForEach(x => { x.FillData(); });
-
-        }
-        void GetPriceInThread(object sender, EventArgs e)
-        {
-            var n=Thread.CurrentThread.Name;
             engine.exchanges.ForEach
                 (
-                    x => {
+                    x =>
+                    {
                         x.Price.Keys.ToList().ForEach
                      (
                          k =>
@@ -220,45 +151,61 @@ namespace PriceMonitor
                          }
                       );
                     });
-            rows.ForEach(x => {
-                x.cb.BeginInvoke(new Action(() =>
+
+
+
+            // InvalidOperationException
+            try
+            {
+                rows.ForEach(x =>
                 {
-                    x.FillData();
-                    labelTimeRefresh.Text = string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now);
-                }));
-            });
-            //MessageBox.Show(Thread.CurrentThread.Name);
+                    x.cb.BeginInvoke(new Action(() =>
+                    {
+                        x.FillData();
+                    }));
+                });
+
+                labelTimeRefresh.Invoke(new Action(() =>
+                { labelTimeRefresh.Text = string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now); }));
+            }
+            catch (InvalidOperationException)
+            {
+
+            }
+
         }
-        void StartTimerInThread() //for all coin in all combobox ОЧЕНЬ ПЛОХОЙ МЕТОД КАК БЫ ЕГО ПЕРЕДЕЛАТЬ?
+        void TimerInThread()
         {
-            tmr = new System.Timers.Timer();
-            tmr.Elapsed += GetPriceInThread;
-            Thread trd = new Thread(delegate ()
-            {                
-                tmr.Interval = double.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate"));
-                tmr.Start();
-                
-            });
-            trd.IsBackground = true;
-            trd.Name = "my Timer thread";
+            TimerCallback tm = new TimerCallback(AutoUpdate);
+            // создаем таймер
+            timer = new System.Threading.Timer(tm, null, 0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+        }
+        void UpdateData(object sender) // заполнение кнопки данными
+        {
+            //for once
+            if ((ComboBox)sender != null)
+            {
+                rows.Find(x => (x.cb.Equals((ComboBox)sender))).FillData();
+            }
+        }
+
+        void GetPriceInThread(string sel_coin, ComboBox cb)
+        {
+            Thread trd = new Thread(delegate () { engine.GetPrice(sel_coin); cb.Invoke(new Action(() => UpdateData(cb))); });
             trd.Start();
             //trd.Join();
-        }
-        void GetPriceInThread(string sel_coin)
-        {
-            Thread trd = new Thread(delegate () { engine.GetPrice(sel_coin); });
-            trd.Start();
-            trd.Join();
         }
         public void comboBoxEventSelIndexChanged(object sender, EventArgs e) // тут можно поиграться с порядком, для лучшего отображения
         {
             ComboBox cb = (ComboBox)sender;
 
+            // запрос цен в отдельном потоке
+            GetPriceInThread(cb.SelectedItem.ToString(), cb);
+
             // отрисовка кнопок при выборе монеты
             rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
 
-            engine.exchanges.ForEach(x=> { x.Price.Add(cb.SelectedItem.ToString(),new StockExchange.CurrentPrice()); });
-            timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+            //engine.exchanges.ForEach(x=> { if(!x.Price.Keys.Contains(cb.SelectedItem.ToString())) x.Price.Add(cb.SelectedItem.ToString(),new StockExchange.CurrentPrice()); });
 
             // Создание новой строки            
             if (rows.Last().cb.Equals(cb))
@@ -267,8 +214,7 @@ namespace PriceMonitor
                 //UpdateData(rows.Last().cb);
             }
 
-            // запрос цен в отдельном потоке
-            //GetPriceInThread(cb.SelectedItem.ToString());
+
 
             // заполнение кнопок для определенного комбобокса
             //UpdateData(sender);
@@ -276,10 +222,21 @@ namespace PriceMonitor
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            
-            Init();
-            //StartTimerInThread();
-            TimerInThread();
+
+            try
+            {
+                Init();
+                //StartTimerInThread();
+                TimerInThread();
+            }
+            catch (System.Net.WebException ex)
+            {
+                if (ex.Message.Contains("Невозможно разрешить удаленное имя"))
+                    MessageBox.Show("Проверьте подключение к Интернету!");
+                else
+                    MessageBox.Show(ex.Message);
+                Application.Exit();
+            }
 
         }
 
