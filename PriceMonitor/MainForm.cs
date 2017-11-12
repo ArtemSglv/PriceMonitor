@@ -138,21 +138,7 @@ namespace PriceMonitor
         // в потоке таймера
         void AutoUpdate(object obj)
         {
-
-            engine.exchanges.ForEach
-                (
-                    x =>
-                    {
-                        x.Price.Keys.ToList().ForEach
-                     (
-                         k =>
-                         {
-                             engine.GetPrice(k);
-                         }
-                      );
-                    });
-
-
+            engine.GetPrice();
 
             // InvalidOperationException
             try
@@ -178,7 +164,7 @@ namespace PriceMonitor
         {
             TimerCallback tm = new TimerCallback(AutoUpdate);
             // создаем таймер
-            timer = new System.Threading.Timer(tm, null, 0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+            timer = new System.Threading.Timer(tm, null, 5000, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
         }
         void UpdateData(object sender) // заполнение кнопки данными
         {
@@ -189,23 +175,23 @@ namespace PriceMonitor
             }
         }
 
-        void GetPriceInThread(string sel_coin, ComboBox cb)
+        void GetPriceInThread( ComboBox cb)
         {
-            Thread trd = new Thread(delegate () { engine.GetPrice(sel_coin); cb.Invoke(new Action(() => UpdateData(cb))); });
+            Thread trd = new Thread(delegate () { engine.GetPrice(); cb.Invoke(new Action(() => UpdateData(cb))); });
             trd.Start();
             //trd.Join();
         }
         public void comboBoxEventSelIndexChanged(object sender, EventArgs e) // тут можно поиграться с порядком, для лучшего отображения
         {
             ComboBox cb = (ComboBox)sender;
-
+            engine.exchanges.ForEach(x=> { if(!x.Price.Keys.Contains(cb.SelectedItem.ToString())) x.Price.Add(cb.SelectedItem.ToString(),new StockExchange.CurrentPrice()); });
             // запрос цен в отдельном потоке
-            GetPriceInThread(cb.SelectedItem.ToString(), cb);
-
+            //GetPriceInThread(cb);
+            timer.Change(int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")),
+                int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
             // отрисовка кнопок при выборе монеты
             rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
 
-            //engine.exchanges.ForEach(x=> { if(!x.Price.Keys.Contains(cb.SelectedItem.ToString())) x.Price.Add(cb.SelectedItem.ToString(),new StockExchange.CurrentPrice()); });
 
             // Создание новой строки            
             if (rows.Last().cb.Equals(cb))
@@ -213,8 +199,6 @@ namespace PriceMonitor
                 CreateRow();
                 //UpdateData(rows.Last().cb);
             }
-
-
 
             // заполнение кнопок для определенного комбобокса
             //UpdateData(sender);

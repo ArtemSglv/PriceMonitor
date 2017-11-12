@@ -19,35 +19,50 @@ namespace PriceMonitor
 
         public override List<string> GetAssets()
         {
-            string command = "Assets";
+            string command = "AssetPairs";
             return Engine.DeserializeToAssetsKraken(Engine.Request(UrlAPI + command));
         }
 
-        public override void GetPrice(string coin)
+        public override void GetPrice()
         {
-            string command = "Depth?pair=" + coin + "XBT&count=1";
+            string command = "Ticker?pair=";
+            Price.Keys.ToList().ForEach(pk=>
+            {
+                if (AvailableCoins.Contains(pk))
+                    command += pk + "XBT,";
+            });
+            command=command.Remove(command.Length-1);
             string resp = Engine.Request(UrlAPI + command);
 
-            if (resp.Contains("Unknown asset pair") )
+            if (resp.Contains("Unknown asset pair"))
             {
-                Price.Remove(coin);
+                //Price.Remove(coin);
                 //Price[coin].Clear();
                 return;
             }
             //21
-            resp = resp.Substring(21, resp.Length - 22);
+            //resp = resp.Substring(21, resp.Length - 22);
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
-            resp = resp.Remove(0,resp.IndexOf(':'));
-            resp = "{\"coin\""+resp;
+            //resp = resp.Remove(0, resp.IndexOf(':'));
+            //resp = "{\"coin\"" + resp;
 
             PriceKraken pl = Engine.DeserializeToPriceKraken(resp); //может быть без бида или аска ответ!!!
             CurrentPrice pr;
-            if (pl.coin["asks"].Count!=0 && pl.coin["bids"].Count != 0)
+            if (!pl.Equals(null))
             {
-                pr.ask = pl.coin["asks"][0];
-                pr.bid = pl.coin["bids"][0];
-                Price[coin] = pr;
+                Price.Keys.ToList().ForEach(pk => {
+                    pl.result.Keys.ToList().ForEach(plk =>
+                    {
+                        if (plk.Contains(pk))
+                        {
+                            pr.ask = pl.result[plk].a[0];
+                            pr.bid = pl.result[plk].b[0];
+                            Price[pk] = pr;
+                        }
+                    }
+                    );                    
+                });
             }
         }
 

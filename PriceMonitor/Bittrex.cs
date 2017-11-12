@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace PriceMonitor
 {
-    class Bittrex: StockExchange
+    class Bittrex : StockExchange
     {
         public Bittrex()
         {
@@ -23,25 +23,28 @@ namespace PriceMonitor
             return Engine.DeserializeToAssetsBittrex(Engine.Request(UrlAPI + command));
         }
 
-        public override void GetPrice(string coin)
+        public override void GetPrice()
         {
-            string command = "getticker?market=BTC-" + coin;
-            string resp = Engine.Request(UrlAPI+command);
-            if (resp.Contains("Bad request") || resp.Contains("INVALID_MARKET"))
+            Price.Keys.ToList().ForEach(pk =>
             {
-                Price.Remove(coin);
-                //Price[coin].Clear();
-                return;
-            }
-            
-            Dictionary<string,double> dict=Engine.DeserializeToPriceBittrex(resp);
-            CurrentPrice pr;
-            if (dict != null)
-            {
-                pr.ask = dict["Ask"];
-                pr.bid = dict["Bid"];
-                Price[coin] = pr;
-            }
+                string command = "getticker?market=BTC-" + pk;
+                string resp = Engine.Request(UrlAPI + command);
+                if (resp.Contains("Bad request") || resp.Contains("INVALID_MARKET"))
+                {
+                    //Price.Remove(coin);
+                    //Price[coin].Clear();
+                    return;
+                }
+
+                Dictionary<string, double> dict = Engine.DeserializeToPriceBittrex(resp);
+                CurrentPrice pr;
+                if (dict != null)
+                {
+                    pr.ask = dict["Ask"];
+                    pr.bid = dict["Bid"];
+                    Price[pk] = pr;
+                }
+            });
         }
 
         public override string GetUrl(string coin)

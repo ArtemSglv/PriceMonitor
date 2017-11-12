@@ -36,7 +36,8 @@ namespace PriceMonitor
 
     struct PriceLiqui
     {
-        public Dictionary<string, List<double>> coin { get; set; }
+        public List<double> bids { get; set; }
+        public List<double> asks { get; set; }
     }
 
     struct CurrencyKraken
@@ -47,7 +48,20 @@ namespace PriceMonitor
 
     struct PriceKraken
     {
-        public Dictionary<string, List<double>> coin { get; set; }
+        public List<object> error { get; set; }
+        public Dictionary<string, PriceKrakenResult> result { get; set; }
+    }
+    struct PriceKrakenResult
+    {
+        public List<double> a { get; set; }
+        public List<double> b { get; set; }
+        public List<double> v { get; set; }
+        public List<double> c { get; set; }
+        public List<double> p { get; set; }
+        public List<double> t { get; set; }
+        public List<double> l { get; set; }
+        public List<double> h { get; set; }
+        public double o { get; set; }
     }
 
 }

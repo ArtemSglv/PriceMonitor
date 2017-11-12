@@ -23,12 +23,19 @@ namespace PriceMonitor
             return Engine.DeserializeToAssetsLiqui(Engine.Request(UrlAPI + command));
         }
 
-        public override void GetPrice(string coin)
+        public override void GetPrice()
         {
-            string command = "depth/" + coin.ToLower() + "_btc?limit=1";
-            string resp = Engine.Request(UrlAPI + command);
+            string command = "depth/";
+            string resp = string.Empty;
+            Price.Keys.ToList().ForEach(pk =>
+            {
+                command += pk.ToLower() + "_btc-";                
+            });
+            command = command.Remove(command.Count()-1);
+            command += "?limit=1&ignore_invalid=1";
+            resp = Engine.Request(UrlAPI + command);
 
-            if (resp.Contains("Invalid pair name") || resp.Contains("Requests too often"))
+            if (resp.Contains("Requests too often") || resp.Contains("not available") || resp.Contains("empty pair list"))
             {
                 //Price.Remove(coin);
                 return;
@@ -36,15 +43,22 @@ namespace PriceMonitor
 
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
-            resp = resp.Replace(coin.ToLower() + "_btc", "coin");
+            resp = resp.Replace("_btc","");
 
-            PriceLiqui pl = Engine.DeserializeToPriceLiqui(resp);
+            Dictionary<string,PriceLiqui> pl = Engine.DeserializeToPriceLiqui(resp);
             CurrentPrice pr;
-            if (pl.coin!=null && pl.coin["asks"].Count!=0 && pl.coin["bids"].Count != 0)
+            if (!pl.Equals(null))
             {
-                pr.ask = pl.coin["asks"][0];
-                pr.bid = pl.coin["bids"][0];
-                Price[coin] = pr;
+                Price.Keys.ToList().ForEach(pk=> 
+                {
+                    if (pl.Keys.Contains(pk.ToLower()))
+                    {
+                        pr.ask = pl[pk.ToLower()].asks[0];
+                        pr.bid = pl[pk.ToLower()].bids[0];
+                        Price[pk] = pr;
+                    }
+                });
+                
             }
         }
 

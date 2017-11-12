@@ -23,8 +23,8 @@ namespace PriceMonitor
                 new Poloniex(),
                 new Bittrex(),
                 new Liqui(),
-                new Kraken(),
-                new Bitfinex()
+                new Kraken()
+                //new Bitfinex()
             };
             listAssets = new List<string>();
 
@@ -47,9 +47,10 @@ namespace PriceMonitor
 
         public static List<string> DeserializeToAssetsKraken(string str)
         {
+            string sPattern = "^\\w*XBT$";
             List<string> res = new List<string>();
             CurrencyKraken curKrak = JsonConvert.DeserializeObject<CurrencyKraken>(str);
-            curKrak.result.Keys.ToList().ForEach(x => { res.Add((curKrak.result[x])["altname"].ToString()); });
+            curKrak.result.Keys.ToList().ForEach(x => { if (System.Text.RegularExpressions.Regex.IsMatch(x, sPattern)) res.Add((curKrak.result[x])["altname"].ToString().Remove((curKrak.result[x])["altname"].ToString().Length-3)); });
             res.Sort();
             return res;
         }
@@ -58,7 +59,8 @@ namespace PriceMonitor
         {
             List<string> res = new List<string>();
             CurrencyLiqui curLiq = JsonConvert.DeserializeObject<CurrencyLiqui>(str);
-            curLiq.pairs.Keys.ToList().ForEach(x => { if (x.Contains("_btc")) res.Add(x.Substring(0, x.ToString().Length - 4).ToUpper()); });
+            if (curLiq.pairs!=null)
+                curLiq.pairs.Keys.ToList().ForEach(x => { if (x.Contains("_btc")) res.Add(x.Substring(0, x.ToString().Length - 4).ToUpper()); });
             res.Sort();
             return res;
         }
@@ -77,14 +79,14 @@ namespace PriceMonitor
             return res;
         }
 
-        public static PricePoloniex DeserializeToPricePoloniex(string str)
+        public static Dictionary<string,PricePoloniex> DeserializeToPricePoloniex(string str)
         {
-            return JsonConvert.DeserializeObject<PricePoloniex>(str);
+            return JsonConvert.DeserializeObject<Dictionary<string,PricePoloniex>>(str);
         }
 
-        public static PriceLiqui DeserializeToPriceLiqui(string str)
+        public static Dictionary<string,PriceLiqui> DeserializeToPriceLiqui(string str)
         {
-            return JsonConvert.DeserializeObject<PriceLiqui>(str);
+            return JsonConvert.DeserializeObject<Dictionary<string,PriceLiqui>>(str);
         }
 
         public static PriceKraken DeserializeToPriceKraken(string str)
@@ -120,19 +122,20 @@ namespace PriceMonitor
             }
         }
 
-        public void GetPrice(string coin)
+        public void GetPrice()
         {
             try
             {                
                 exchanges.ForEach(x =>
                 {
-                    x.GetPrice(coin);
+                    if(x.Price.Count!=0)
+                    x.GetPrice();
                 });
             }
-            catch (System.Net.WebException ex)
+            catch (WebException)
             {
-                if (ex.Message.Contains("Too Many Requests"))
-                    Thread.Sleep(95000);
+                //if (ex.Message.Contains("Too Many Requests"))
+                //    Thread.Sleep(95000);
 
             }
         }

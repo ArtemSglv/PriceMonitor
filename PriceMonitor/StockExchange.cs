@@ -32,7 +32,7 @@ namespace PriceMonitor
 
         public StockExchange() { }
 
-        public abstract void GetPrice(string coin);
+        public abstract void GetPrice();
 
         public abstract List<string> GetAssets();
         public override string ToString()

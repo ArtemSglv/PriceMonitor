@@ -23,28 +23,38 @@ namespace PriceMonitor
             return Engine.DeserializeToAssetsPoloniex(Engine.Request(UrlAPI + command));
         }
 
-        public override void GetPrice(string coin)
+        public override void GetPrice() //даже тут не надо передавать список
         {
-            string command = "returnOrderBook&currencyPair=BTC_" + coin + "&depth=1";
+            string command = "returnOrderBook&currencyPair=all&depth=1";
             string resp = Engine.Request(UrlAPI + command);
 
-            if (resp.Contains("Invalid currency pair."))
-            {
-                Price.Remove(coin);
-                //Price[coin].Clear();
-                return;
-            }
+            //if (resp.Contains("Invalid currency pair."))
+            //{
+            //    Price.Remove(coin);
+            //    //Price[coin].Clear();
+            //    return;
+            //}
 
             resp = resp.Replace("[[", "[");
             resp = resp.Replace("]]", "]");
 
-            PricePoloniex pp = Engine.DeserializeToPricePoloniex(resp);
+            Dictionary<string,PricePoloniex> pp = Engine.DeserializeToPricePoloniex(resp);
             CurrentPrice pr;
             if (!pp.Equals(null))
             {
-                pr.ask = double.Parse(pp.Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-                pr.bid = double.Parse(pp.Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
-                Price[coin] = pr;
+                string key; 
+                Price.Keys.ToList().ForEach(pk =>
+                {
+                    key= "BTC_" + pk.ToUpper();
+                    if (pp.Keys.Contains(key))
+                    {
+                        pr.ask = double.Parse(pp[key].Asks[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                        pr.bid = double.Parse(pp[key].Bids[0].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                        Price[pk] = pr;
+                    }
+
+                });
+                
             }
         }
         public override string GetUrl(string coin)

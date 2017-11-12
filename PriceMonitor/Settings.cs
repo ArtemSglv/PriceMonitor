@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 
@@ -22,7 +15,7 @@ namespace PriceMonitor
         {
             if (textBoxFreq.Text != "")
             {
-                ConfigurationManager.AppSettings.Set("frequencyUpdate", textBoxFreq.Text);
+                ConfigurationManager.AppSettings.Set("frequencyUpdate", textBoxFreq.Text+"000");
                 MainForm.timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
             }
             if (textBoxCountDigit.Text != "")
