@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
+using System.IO;
 
 namespace PriceMonitor
 {
@@ -18,6 +17,9 @@ namespace PriceMonitor
         static Engine engine = new Engine();
         public static System.Threading.Timer timer;
         static object locker = new object();
+
+        //int counter = 0;
+        
 
         class Row
         {
@@ -127,32 +129,30 @@ namespace PriceMonitor
 
         void ScanAssets()
         {
-            string str = "";
-
-            engine.ScanAssets();
-            engine.exchanges.ForEach(x => str += x.ToString());
-
-            MessageBox.Show("Найдено монет:\r\n" + str);
+            MessageBox.Show("Найдено монет:\r\n" + engine.ScanAssets());
         }
 
         // в потоке таймера
         void AutoUpdate(object obj)
         {
-            engine.GetPrice();
 
             // InvalidOperationException
             try
             {
-                rows.ForEach(x =>
-                {
-                    x.cb.BeginInvoke(new Action(() =>
-                    {
-                        x.FillData();
-                    }));
-                });
+                engine.GetPrice();
+                //counter++;
 
                 labelTimeRefresh.Invoke(new Action(() =>
                 { labelTimeRefresh.Text = string.Format("Время обновления {0:HH:mm:ss} ", DateTime.Now); }));
+
+                rows.ForEach(x =>
+                    {
+                        x.cb.BeginInvoke(new Action(() =>
+                        {
+                            x.FillData();
+                        }));
+                    });               
+
             }
             catch (InvalidOperationException)
             {
@@ -164,7 +164,8 @@ namespace PriceMonitor
         {
             TimerCallback tm = new TimerCallback(AutoUpdate);
             // создаем таймер
-            timer = new System.Threading.Timer(tm, null, 5000, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+            timer = new System.Threading.Timer(tm, null, 3000, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+           
         }
         void UpdateData(object sender) // заполнение кнопки данными
         {
@@ -175,7 +176,7 @@ namespace PriceMonitor
             }
         }
 
-        void GetPriceInThread( ComboBox cb)
+        void GetPriceInThread(ComboBox cb)
         {
             Thread trd = new Thread(delegate () { engine.GetPrice(); cb.Invoke(new Action(() => UpdateData(cb))); });
             trd.Start();
@@ -184,11 +185,10 @@ namespace PriceMonitor
         public void comboBoxEventSelIndexChanged(object sender, EventArgs e) // тут можно поиграться с порядком, для лучшего отображения
         {
             ComboBox cb = (ComboBox)sender;
-            engine.exchanges.ForEach(x=> { if(!x.Price.Keys.Contains(cb.SelectedItem.ToString())) x.Price.Add(cb.SelectedItem.ToString(),new StockExchange.CurrentPrice()); });
+            engine.exchanges.ForEach(x => { if (!x.Price.Keys.Contains(cb.SelectedItem.ToString())) x.Price.Add(cb.SelectedItem.ToString(), new StockExchange.CurrentPrice()); });
             // запрос цен в отдельном потоке
             //GetPriceInThread(cb);
-            timer.Change(int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")),
-                int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
+            timer.Change(0, int.Parse(ConfigurationManager.AppSettings.Get("frequencyUpdate")));
             // отрисовка кнопок при выборе монеты
             rows.Find(x => (x.cb.Equals(cb))).ShowButtons();
 
@@ -216,10 +216,13 @@ namespace PriceMonitor
             catch (System.Net.WebException ex)
             {
                 if (ex.Message.Contains("Невозможно разрешить удаленное имя"))
+                {
                     MessageBox.Show("Проверьте подключение к Интернету!");
+                    Application.Exit();
+                }
                 else
-                    MessageBox.Show(ex.Message);
-                Application.Exit();
+                    MessageBox.Show(ex.Message + "\r\n" + ex.Response.ResponseUri);
+
             }
 
         }

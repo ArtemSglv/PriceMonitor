@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PriceMonitor
 {
-    class Bitfinex:StockExchange
+    class Bitfinex : StockExchange
     {
         public Bitfinex()
         {
@@ -25,35 +25,36 @@ namespace PriceMonitor
 
         public override void GetPrice()
         {
-        //    string command = "book/" + coins.ToUpper() + "BTC?limit_asks=1&limit_bids=1";
-        //    string resp = Engine.Request(UrlAPI + command);
+            string command = string.Empty;
+            string resp = string.Empty;
+            Price.Keys.ToList().ForEach(pk =>
+            {
+                command = "book/" + pk + "BTC?limit_asks=1&limit_bids=1";
+                resp = Engine.Request(UrlAPI + command);
 
-        //    if (resp.Contains("Unknown symbol"))
-        //    {
-        //        Price.Remove(coins);
-        //        //Price[coin].Clear();
-        //        return;
-        //    }
-        //    //21
-        //   // resp = resp.Substring(21, resp.Length - 22);
-        //    resp = resp.Replace("[", "");
-        //    resp = resp.Replace("]", "");
-        //   // resp = resp.Remove(0, resp.IndexOf(':'));
-        //    //resp = "{\"coin\"" + resp;
+                if (resp.Contains("Unknown symbol"))
+                {
+                    Price.Remove(pk);
+                    return;
+                }
 
-        //    Dictionary<string,Dictionary<string,double>> pb = Engine.DeserializeToPriceBitfinex(resp);
-        //    CurrentPrice pr;
-        //    if (pb != null)
-        //    {
-        //        pr.ask = pb["asks"]["price"];
-        //        pr.bid = pb["bids"]["price"];
-        //        Price[coin] = pr;
-        //    }
+                resp = resp.Replace("[", "");
+                resp = resp.Replace("]", "");
+
+                Dictionary<string, Dictionary<string, double>> pb = Engine.DeserializeToPriceBitfinex(resp);
+                CurrentPrice pr;
+                if (pb.Keys != null)
+                {
+                    pr.ask = pb["asks"]["price"];
+                    pr.bid = pb["bids"]["price"];
+                    Price[pk] = pr;
+                }
+            });
         }
 
         public override string GetUrl(string coin)
         {
-            return Url+coin.ToUpper()+":BTC";
+            return Url + coin.ToUpper() + ":BTC";
         }
     }
 }

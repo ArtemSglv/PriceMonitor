@@ -23,8 +23,8 @@ namespace PriceMonitor
                 new Poloniex(),
                 new Bittrex(),
                 new Liqui(),
-                new Kraken()
-                //new Bitfinex()
+                new Kraken(),
+                new Bitfinex()
             };
             listAssets = new List<string>();
 
@@ -108,8 +108,9 @@ namespace PriceMonitor
             //return res;
         }
 
-        public void ScanAssets()
+        public string ScanAssets()
         {
+            string str=string.Empty;
             foreach (StockExchange ex in exchanges)
             {
                 if (listAssets.Count == 0)
@@ -119,7 +120,9 @@ namespace PriceMonitor
                     listAssets = listAssets.Union(ex.AvailableCoins = ex.GetAssets()).ToList();
                     listAssets.Sort();
                 }
+                str += ex.ToString();
             }
+            return str;
         }
 
         public void GetPrice()

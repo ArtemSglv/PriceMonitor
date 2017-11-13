@@ -29,13 +29,14 @@ namespace PriceMonitor
             string resp = string.Empty;
             Price.Keys.ToList().ForEach(pk =>
             {
+                if(AvailableCoins.Contains(pk))
                 command += pk.ToLower() + "_btc-";                
             });
             command = command.Remove(command.Count()-1);
             command += "?limit=1&ignore_invalid=1";
             resp = Engine.Request(UrlAPI + command);
 
-            if (resp.Contains("Requests too often") || resp.Contains("not available") || resp.Contains("empty pair list"))
+            if (resp.Contains("Requests too often") || resp.Contains("not available") || resp.Contains("Empty pair list"))
             {
                 //Price.Remove(coin);
                 return;
@@ -47,14 +48,14 @@ namespace PriceMonitor
 
             Dictionary<string,PriceLiqui> pl = Engine.DeserializeToPriceLiqui(resp);
             CurrentPrice pr;
-            if (!pl.Equals(null))
+            if (!pl.Keys.Equals(null))
             {
                 Price.Keys.ToList().ForEach(pk=> 
                 {
                     if (pl.Keys.Contains(pk.ToLower()))
                     {
-                        pr.ask = pl[pk.ToLower()].asks[0];
-                        pr.bid = pl[pk.ToLower()].bids[0];
+                        pr.ask = pl[pk.ToLower()].asks.Count!=0?pl[pk.ToLower()].asks[0]:0;
+                        pr.bid = pl[pk.ToLower()].bids.Count!=0? pl[pk.ToLower()].bids[0]:0;
                         Price[pk] = pr;
                     }
                 });

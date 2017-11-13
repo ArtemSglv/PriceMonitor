@@ -25,14 +25,15 @@ namespace PriceMonitor
 
         public override void GetPrice()
         {
+            string command = string.Empty;
+            string resp = string.Empty;
             Price.Keys.ToList().ForEach(pk =>
             {
-                string command = "getticker?market=BTC-" + pk;
-                string resp = Engine.Request(UrlAPI + command);
-                if (resp.Contains("Bad request") || resp.Contains("INVALID_MARKET"))
+                command = "getticker?market=BTC-" + pk;
+                resp=Engine.Request(UrlAPI + command);
+                if (resp.Contains("INVALID_MARKET"))
                 {
-                    //Price.Remove(coin);
-                    //Price[coin].Clear();
+                    Price.Remove(pk);
                     return;
                 }
 
