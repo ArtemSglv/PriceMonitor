@@ -127,12 +127,14 @@ namespace PriceMonitor
 
         public void GetPrice()
         {
+            
             try
             {                
                 exchanges.ForEach(x =>
                 {
-                    if(x.Price.Count!=0)
-                    x.GetPrice();
+                    if ((x.Name.Equals("Bitfinex") && !x.Paused && x.Price.Count != 0) || x.Price.Count != 0)
+                        x.GetPrice();
+                    
                 });
             }
             catch (WebException)
@@ -141,6 +143,7 @@ namespace PriceMonitor
                 //    Thread.Sleep(95000);
 
             }
+            
         }
     }
 }
